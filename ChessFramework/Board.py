@@ -89,7 +89,7 @@ class Board(object):
                     x += move[0]
 
                     new_pos = Position(x, y)
-                    if new_pos.is_in_boundary(self.SIZE):
+                    if new_pos.is_in_boundary(self.SIZE) and self.board[new_pos.x][new_pos.y] is None:
                         positions.append(Position(x, y))
                     else:
                         break
