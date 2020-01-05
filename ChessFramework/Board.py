@@ -18,8 +18,7 @@ class Board(object):
 
         # CREATE CUSTOM PIECES
         piece = Piece("Pawn", "P")
-        piece.addMove(PawnMovement.moves)
-        piece.addAttack(PawnMovement.attacks)
+        piece.add_movement(PawnMovement())
 
         for i in range(self.SIZE):
             self.add_piece(piece, Position(1, i), Player.WHITE)
@@ -28,8 +27,7 @@ class Board(object):
             self.add_piece(piece, Position(6, i), Player.BLACK)
 
         piece = Piece("Horse", "H")
-        piece.addMove(HorseMovement.moves)
-        piece.attackWhileMove = True
+        piece.add_movement(HorseMovement())
 
         # PLACE PIECES ON BOARD
         self.add_piece(piece, Position(0, 1), Player.WHITE)
@@ -71,21 +69,30 @@ class Board(object):
         positions = []
 
         p_or = 1 if piece.player == Player.WHITE else -1
-        if attack == True and piece.attackWhileMoves == False:
-            it_moves = piece.attacks
-        else:
-            it_moves = piece.moves
+        
+        for movement in piece.movements:
+            moves = movement.attacks if attack else movement.moves
+            
+            for move in moves:
+                x = piece.position.x
+                y = piece.position.y
 
-        for move in it_moves:
-            x = piece.position.x
-            y = piece.position.y
+                y += p_or * move[1]
+                x += move[0]
 
-            y += p_or * move[1]
-            x += move[0]
+                new_pos = Position(x, y)
+                if new_pos.is_in_boundary(self.SIZE):
+                    positions.append(Position(x, y))
 
-            new_pos = Position(x, y)
-            if new_pos.is_in_boundary(self.SIZE):
-                positions.append(Position(x, y))
+                while movement.vacant:
+                    y += p_or * move[1]
+                    x += move[0]
+
+                    new_pos = Position(x, y)
+                    if new_pos.is_in_boundary(self.SIZE):
+                        positions.append(Position(x, y))
+                    else:
+                        break
 
         for p in positions:
             print(p)

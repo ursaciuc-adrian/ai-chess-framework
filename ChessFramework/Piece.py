@@ -1,6 +1,6 @@
 from enum import Enum
 from Position import Position
-
+from Move import Movement
 
 class Player(Enum):
     WHITE = 1  # up
@@ -14,20 +14,12 @@ class Piece():
     name = ""
     id = ""
 
-    # defines how the pice can move
-    # for horse: 3left1up = (1, -3), 1up3left (1, -3), 1up3right, (1, 3) ...
-    moves = []
-
-    # defines how the piece can attack
-    # for pawn: 1lu (1 position to upper left = (1, -1)), 1ru = (1, 1))
-    attacks = []
+    movements = []
 
     def __init__(self, name, id):
-        self.moves = []
-        self.attacks = []
+        self.movements = []
         self.name = name
         self.id = id
-        self.attackWhileMoves = False
 
     def __str__(self):
         data = "Position: " + str(self.position) + "\n"
@@ -44,18 +36,10 @@ class Piece():
     def set_player(self, player: Player):
         self.player = player
 
-    def addMove(self, move):
-        if isinstance(move, list):
-            self.moves += move
-        elif isinstance(move, Move):
-            self.moves += Move.moves  
-        else:
-            self.moves.append(move)
 
-    def addAttack(self, attack):
-        if isinstance(attack, list):
-            self.attacks = attack
-        elif isinstance(attack, Move):
-            self.attacks += Move.attacks
-        else:
-            self.attacks.append(attack)
+    def add_movement(self, movement):
+        if isinstance(movement, Movement):
+            self.movements.append(movement)
+            return
+
+        print('Tried to attach something that is not a movement to the piece:' + str(movement))
