@@ -66,3 +66,20 @@ class PawnMovement(Movement):
     attacks = [(1, 1), (1, -1)]
     name = "Pawn movement"
     vacant = False
+
+
+class CustomMovement(Movement):
+    moves = []
+    attacks = []
+    name = "Custom movement"
+    vacant = False
+
+    def addCustomMovement(x, y):
+        moves.append((x,y))
+
+    def addCustomAttack(x, y):
+        attacks.append((x,y))
+
+    def setVacant(value):
+        """Can apply the movement a variable number of times each turn"""
+        vacant = value
