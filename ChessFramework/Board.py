@@ -36,6 +36,43 @@ class Board(object):
         self.add_piece(piece, Position(7, 1), Player.BLACK)
         self.add_piece(piece, Position(7, 6), Player.BLACK)
 
+        piece = Piece("Rook", "R")
+        piece.add_movement(HorizontalMovement())
+        piece.add_movement(VerticalMovement())
+
+        self.add_piece(piece, Position(0, 0), Player.WHITE)
+        self.add_piece(piece, Position(0, 7), Player.WHITE)
+
+        self.add_piece(piece, Position(7, 0), Player.BLACK)
+        self.add_piece(piece, Position(7, 7), Player.BLACK)
+
+
+        piece = Piece("Bishop", "B")
+        piece.add_movement(DiagonalMovement())
+
+        self.add_piece(piece, Position(0, 2), Player.WHITE)
+        self.add_piece(piece, Position(0, 5), Player.WHITE)
+
+        self.add_piece(piece, Position(7, 2), Player.BLACK)
+        self.add_piece(piece, Position(7, 5), Player.BLACK)
+
+
+        piece = Piece("Queen", "Q")
+        piece.add_movement(HorizontalMovement())
+        piece.add_movement(VerticalMovement())
+        piece.add_movement(DiagonalMovement())
+
+        self.add_piece(piece, Position(0, 4), Player.WHITE)
+        self.add_piece(piece, Position(7, 4), Player.BLACK)
+
+        piece = Piece("King", "K")
+        piece.add_movement(LimitedHorizontalMovement())
+        piece.add_movement(LimitedVerticalMovement())
+        piece.add_movement(LimitedDiagonalMovement())
+
+        self.add_piece(piece, Position(0, 3), Player.WHITE)
+        self.add_piece(piece, Position(7, 3), Player.BLACK)
+
 
     def add_piece(self, piece: Piece, position: Position, player: Player):
         """Adds a piece on the board."""
@@ -69,24 +106,22 @@ class Board(object):
         positions = []
 
         p_or = 1 if piece.player == Player.WHITE else -1
-        
         for movement in piece.movements:
             moves = movement.attacks if attack else movement.moves
             
             for move in moves:
                 x = piece.position.x
                 y = piece.position.y
-
-                y += p_or * move[1]
-                x += move[0]
-
+                    
+                y += move[1]
+                x += p_or * move[0]
                 new_pos = Position(x, y)
                 if new_pos.is_in_boundary(self.SIZE):
                     positions.append(Position(x, y))
 
                 while movement.vacant:
-                    y += p_or * move[1]
-                    x += move[0]
+                    y += move[1]
+                    x += p_or * move[0]
 
                     new_pos = Position(x, y)
                     if new_pos.is_in_boundary(self.SIZE) and self.board[new_pos.x][new_pos.y] is None:
