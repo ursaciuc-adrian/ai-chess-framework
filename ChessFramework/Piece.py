@@ -43,3 +43,4 @@ class Piece():
             return
 
         print('Tried to attach something that is not a movement to the piece:' + str(movement))
+

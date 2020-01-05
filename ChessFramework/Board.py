@@ -185,3 +185,27 @@ class Board(object):
             self.board[from_pos.x][from_pos.y] = None
         else:
             print("Invalid move.")
+
+
+    def get_player_from_pos(from_pos: Position):
+        if self.board[from_pos.x][from_pos.y]:
+            return self.board[from_pos.x][from_pos.y].player
+
+        return None
+
+
+    def is_draw():
+        # if fivefold repetition or 75 moves without a pawn push or capture
+        pass
+
+    
+    def is_check():
+        pass
+
+
+    def is_check_mate():
+        pass
+
+
+    def get_pieces_for_player(player: Player):
+        pass

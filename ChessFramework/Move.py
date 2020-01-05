@@ -74,12 +74,12 @@ class CustomMovement(Movement):
     name = "Custom movement"
     vacant = False
 
-    def addCustomMovement(x, y):
+    def add_custom_movement(x, y):
         moves.append((x,y))
 
-    def addCustomAttack(x, y):
+    def add_custom_attack(x, y):
         attacks.append((x,y))
 
-    def setVacant(value):
+    def set_vacant(value):
         """Can apply the movement a variable number of times each turn"""
         vacant = value
