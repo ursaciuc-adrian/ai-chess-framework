@@ -128,6 +128,9 @@ class Board(object):
                     new_pos = Position(x, y)
                     if new_pos.is_in_boundary(self.SIZE) and self.board[new_pos.x][new_pos.y] is None:
                         positions.append(Position(x, y))
+                    elif new_pos.is_in_boundary(self.SIZE) and attack==True:
+                        positions.append(Position(x,y))
+                        break
                     else:
                         break
 
