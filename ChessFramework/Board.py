@@ -71,6 +71,12 @@ class Board(object):
         self.add_piece(piece, Position(0, 3), Player.WHITE)
         self.add_piece(piece, Position(7, 3), Player.BLACK)
 
+    def copy(self, other):
+        if not isinstance(other, Board):
+            return False
+        self.board = deepcopy(other.board)
+        self.SIZE = other.SIZE
+
     def add_piece(self, piece: Piece, position: Position, player: Player):
         """Adds a piece on the board."""
         Guard.check_position(position, self.SIZE)
@@ -177,13 +183,14 @@ class Board(object):
 
         return False
 
-    def move(self, from_pos: Position, to_pos: Position):
+    def move(self, from_pos: Position, to_pos: Position, verbose = True):
         if self.can_move(from_pos, to_pos) or self.can_attack(from_pos, to_pos):
             self.board[to_pos.x][to_pos.y] = self.board[from_pos.x][from_pos.y]
             self.board[to_pos.x][to_pos.y].position = to_pos
             self.board[from_pos.x][from_pos.y] = None
         else:
-            print("Invalid move.")
+            if verbose:
+                print("Invalid move.")
             return False
           
     def get_player_from_pos(self, from_pos: Position):
