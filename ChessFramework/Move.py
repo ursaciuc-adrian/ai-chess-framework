@@ -6,8 +6,8 @@ class Movement:
 
 class HorseMovement(Movement):
     """Regular horse/king movement: can move once in L."""
-    moves = [(2, 1), (2, -1), (1, -2), (1,2 ), (-1, 2), (-1, -2), (-2, 1), (-2, -1)]
-    attacks = [(2, 1), (2, -1), (1, -2), (1,2 ), (-1, 2), (-1, -2), (-2, 1), (-2, -1)]
+    moves = [(2, 1), (2, -1), (1, -2), (1, 2), (-1, 2), (-1, -2), (-2, 1), (-2, -1)]
+    attacks = [(2, 1), (2, -1), (1, -2), (1, 2), (-1, 2), (-1, -2), (-2, 1), (-2, -1)]
     name = "Horse movement"
     vacant = False
 
@@ -62,7 +62,7 @@ class VerticalMovement(Movement):
 
 class PawnMovement(Movement):
     """Regular (not conditional) pawn movements"""
-    moves = [(1, 0)] # (2, 0) is a special movement only when pawn didn't move
+    moves = [(1, 0)]  # (2, 0) is a special movement only when pawn didn't move
     attacks = [(1, 1), (1, -1)]
     name = "Pawn movement"
     vacant = False
@@ -75,10 +75,10 @@ class CustomMovement(Movement):
     vacant = False
 
     def add_custom_movement(x, y):
-        moves.append((x,y))
+        moves.append((x, y))
 
     def add_custom_attack(x, y):
-        attacks.append((x,y))
+        attacks.append((x, y))
 
     def set_vacant(value):
         """Can apply the movement a variable number of times each turn"""

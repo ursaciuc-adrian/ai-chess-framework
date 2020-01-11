@@ -2,6 +2,7 @@ from enum import Enum
 from Position import Position
 from Move import Movement
 
+
 class Player(Enum):
     WHITE = 1  # up
     BLACK = 2  # down
@@ -36,11 +37,9 @@ class Piece():
     def set_player(self, player: Player):
         self.player = player
 
-
     def add_movement(self, movement):
         if isinstance(movement, Movement):
             self.movements.append(movement)
             return
 
         print('Tried to attach something that is not a movement to the piece:' + str(movement))
-
