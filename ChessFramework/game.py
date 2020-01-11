@@ -19,6 +19,7 @@ while True:
     from_pos = Position(int(from_pos[0]), int(from_pos[1]))
     to_pos = Position(int(to_pos[0]), int(to_pos[1]))
 
+    print(from_pos)
     if board.get_player_from_pos(from_pos) != turn:
         print('This is the other player turn')
     
@@ -27,6 +28,6 @@ while True:
         board.display_board()
 
 
-        if turn == Player.WHITE
+        if turn == Player.WHITE:
             turn = Player.BLACK
 

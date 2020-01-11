@@ -187,7 +187,7 @@ class Board(object):
             print("Invalid move.")
 
 
-    def get_player_from_pos(from_pos: Position):
+    def get_player_from_pos(self, from_pos: Position):
         if self.board[from_pos.x][from_pos.y]:
             return self.board[from_pos.x][from_pos.y].player
 
