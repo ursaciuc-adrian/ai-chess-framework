@@ -21,7 +21,6 @@ while True:
 
         if board.get_player_from_pos(from_pos) != turn:
             print('This is the other player turn')
-
         else:
             correct_move = board.move(from_pos, to_pos)
             board.display_board()
