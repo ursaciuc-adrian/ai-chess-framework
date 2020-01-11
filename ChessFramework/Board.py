@@ -2,7 +2,7 @@ from Piece import Piece, Player
 from Position import Position
 from Guard import Guard
 from Move import *
-from copy import copy
+from copy import copy, deepcopy
 import re
 
 
@@ -46,7 +46,6 @@ class Board(object):
         self.add_piece(piece, Position(7, 0), Player.BLACK)
         self.add_piece(piece, Position(7, 7), Player.BLACK)
 
-
         piece = Piece("Bishop", "B")
         piece.add_movement(DiagonalMovement())
 
@@ -55,7 +54,6 @@ class Board(object):
 
         self.add_piece(piece, Position(7, 2), Player.BLACK)
         self.add_piece(piece, Position(7, 5), Player.BLACK)
-
 
         piece = Piece("Queen", "Q")
         piece.add_movement(HorizontalMovement())
@@ -73,7 +71,6 @@ class Board(object):
         self.add_piece(piece, Position(0, 3), Player.WHITE)
         self.add_piece(piece, Position(7, 3), Player.BLACK)
 
-
     def add_piece(self, piece: Piece, position: Position, player: Player):
         """Adds a piece on the board."""
         Guard.check_position(position, self.SIZE)
@@ -82,7 +79,6 @@ class Board(object):
         piece.set_player(player)
         self.board[piece.position.x][piece.position.y] = copy(piece)
 
-
     def display_pieces(self):
         for i in range(self.SIZE):
             for j in range(self.SIZE):
@@ -90,6 +86,13 @@ class Board(object):
                     print(self.board[i][j])
             print()
 
+    def get_pieces(self):
+        pieces = []
+        for i in range(self.SIZE):
+            for j in range(self.SIZE):
+                if self.board[i][j] is not None:
+                    pieces.append(self.board[i][j])
+        return pieces
 
     def display_board(self):
         for i in range(self.SIZE):
@@ -101,18 +104,17 @@ class Board(object):
             print()
         print()
 
-
     def available_piece_moves(self, piece: Piece, attack=False):
         positions = []
 
         p_or = 1 if piece.player == Player.WHITE else -1
         for movement in piece.movements:
             moves = movement.attacks if attack else movement.moves
-            
+
             for move in moves:
                 x = piece.position.x
                 y = piece.position.y
-                    
+
                 y += move[1]
                 x += p_or * move[0]
                 new_pos = Position(x, y)
@@ -129,11 +131,7 @@ class Board(object):
                     else:
                         break
 
-        for p in positions:
-            print(p)
-
         return positions
-
 
     def can_move(self, from_pos: Position, to_pos: Position):
         if not from_pos.is_in_boundary(self.SIZE) or not to_pos.is_in_boundary(self.SIZE):
@@ -153,7 +151,6 @@ class Board(object):
             return True
 
         return False
-
 
     def can_attack(self, from_pos: Position, to_pos: Position):
         if not from_pos.is_in_boundary(self.SIZE) or not to_pos.is_in_boundary(self.SIZE):
@@ -177,7 +174,6 @@ class Board(object):
 
         return False
 
-
     def move(self, from_pos: Position, to_pos: Position):
         if self.can_move(from_pos, to_pos) or self.can_attack(from_pos, to_pos):
             self.board[to_pos.x][to_pos.y] = self.board[from_pos.x][from_pos.y]
@@ -185,27 +181,65 @@ class Board(object):
             self.board[from_pos.x][from_pos.y] = None
         else:
             print("Invalid move.")
+            return False
 
-
-    def get_player_from_pos(from_pos: Position):
+    def get_player_from_pos(self, from_pos: Position):
         if self.board[from_pos.x][from_pos.y]:
             return self.board[from_pos.x][from_pos.y].player
 
         return None
 
+    def is_attacked(self, piece: Piece, player: Player):
+        """Method to verify if the piece from the player is attacked."""
+        for attacking_piece in self.get_pieces():
+            if attacking_piece.player != player and self.can_attack(attacking_piece.position, piece.position):
+                return True
+        return False
 
-    def is_draw():
+    def is_draw(self):
         # if fivefold repetition or 75 moves without a pawn push or capture
         pass
 
-    
-    def is_check():
-        pass
+    def is_check(self, player: Player):
+        """ Checks if it is check for the player"""
+        for piece in self.get_pieces_for_player(player):
+            if piece.id == 'K':
+                if self.is_attacked(piece, player):
+                    return True
+                else:
+                    return False
 
+    def is_check_mate(self, player: Player):
+        """ Checks if it is check mate for the player"""
+        for piece in self.get_pieces_for_player(player):
+            board_copy = deepcopy(self)
 
-    def is_check_mate():
-        pass
+            # Check if moving the piece makes the player not be in check anymore
+            for position in self.available_piece_moves(piece):
+                initial_position = piece.position
 
+                if self.can_move(initial_position, position):
+                    board_copy.move(initial_position, position)
+                    if not self.is_check(player):
+                        return False
+                    else:
+                        board_copy.move(position, initial_position)
 
-    def get_pieces_for_player(player: Player):
-        pass
+            # Check if attacking a piece makes the player not be in check anymore
+            for position in self.available_piece_moves(piece, attack=True):
+                initial_position = piece.position
+
+                if self.can_attack(initial_position, position):
+                    board_copy.move(initial_position, position)
+                    if not self.is_check(player):
+                        return False
+                    else:
+                        board_copy.move(position, initial_position)
+        return True
+
+    def get_pieces_for_player(self, player: Player):
+        pieces = []
+        for piece in self.get_pieces():
+            if piece.player == player:
+                pieces.append(piece)
+        return pieces
