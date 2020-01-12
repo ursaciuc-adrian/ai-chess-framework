@@ -1,6 +1,7 @@
 from Board import Board
 from Position import Position
 from Piece import Player
+import Strategies
 
 board = Board()
 board.init_board()
@@ -8,11 +9,21 @@ board.display_board()
 
 turn = Player.WHITE
 
+Strategies.set_AI(Player.BLACK, Player.WHITE)
+ai = Strategies.Minimax(3)
+
 while True:
 
     # Check check-mate or check and if move doesn't get the king out of check disallow for current player
     # If check-mate, the other one wins
     if not board.is_check_mate(turn):
+        if turn == Player.BLACK:
+            ai_move = ai.take_decision(board)
+            board.move(ai_move[0], ai_move[1])
+            board.display_board()
+            turn = Player.WHITE
+            continue
+
         from_pos = input("from: ").split()
         to_pos = input("to: ").split()
 
