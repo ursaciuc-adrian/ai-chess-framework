@@ -3,6 +3,7 @@ from Position import Position
 from Guard import Guard
 from Move import *
 from copy import copy, deepcopy
+import zlib
 import re
 
 
@@ -13,6 +14,10 @@ class Board(object):
     board = []
     fifty_moves_rule_count = 0
     moves_count = 0
+
+    # needed for three-fold draw rule
+    white_player_moves = dict()
+    black_player_moves = dict()
 
     def init_board(self):
         """Initializes the pieces on the board."""
@@ -127,7 +132,7 @@ class Board(object):
                 x += p_or * move[0]
                 new_pos = Position(x, y)
                 if new_pos.is_in_boundary(self.SIZE) and \
-                        (self.board[new_pos.x][new_pos.y] is None or attack==True):
+                        (self.board[new_pos.x][new_pos.y] is None or attack == True):
                     positions.append(Position(x, y))
 
                     while movement.vacant:
@@ -137,12 +142,12 @@ class Board(object):
                         new_pos = Position(x, y)
                         if new_pos.is_in_boundary(self.SIZE) and self.board[new_pos.x][new_pos.y] is None:
                             positions.append(Position(x, y))
-                        elif new_pos.is_in_boundary(self.SIZE) and attack==True:
-                            positions.append(Position(x,y))
+                        elif new_pos.is_in_boundary(self.SIZE) and attack == True:
+                            positions.append(Position(x, y))
                             break
                         else:
                             break
-        
+
         return positions
 
     def can_move(self, from_pos: Position, to_pos: Position):
@@ -188,7 +193,25 @@ class Board(object):
 
     def move(self, from_pos: Position, to_pos: Position, verbose=True):
         if self.can_move(from_pos, to_pos) or self.can_attack(from_pos, to_pos):
-            # if a piece is taken out then fifty_moves_rule_count is updated
+            if self.board[from_pos.x][from_pos.y].player == Player.WHITE:
+                count = 1
+                try:
+                    count = self.white_player_moves[zlib.crc32(self.board_repr(Player.WHITE))]
+                    self.white_player_moves.update({zlib.crc32(self.board_repr(Player.WHITE)): count})
+                    count += 1
+                except:
+                    self.white_player_moves.update({zlib.crc32(self.board_repr(Player.WHITE)): count})
+
+            if self.board[from_pos.x][from_pos.y].player == Player.BLACK:
+                count = 1
+                try:
+                    count = self.black_player_moves[zlib.crc32(self.board_repr(Player.BLACK))]
+                    self.black_player_moves.update({zlib.crc32(self.board_repr(Player.BLACK)): count})
+                    count += 1
+                except:
+                    self.black_player_moves.update({zlib.crc32(self.board_repr(Player.BLACK)): count})
+
+            # if a piece is taken out then fifty_moves_rule_count is update
             if self.board[to_pos.x][to_pos.y] is not None:
                 self.fifty_moves_rule_count = self.moves_count
 
@@ -220,13 +243,17 @@ class Board(object):
         return False
 
     def is_draw(self, mode='fifty_moves'):
-        """Checks if it is a drawn"""
+        """Checks if it is a draw"""
         # fifty moves rule
         if mode == 'fifty_moves':
             if self.moves_count + 50 >= self.fifty_moves_rule_count:
                 return True
-        if mode == 'three_fold':
-            pass
+        elif mode == 'three_fold':
+            if 3 in self.white_player_moves.values() or 3 in self.black_player_moves.values():
+                return True
+        elif mode == 'all':
+            if self.moves_count + 50 >= self.fifty_moves_rule_count or 3 in self.white_player_moves.values() or 3 in self.black_player_moves.values():
+                return True
         return False
 
     def is_check(self, player: Player):
@@ -277,3 +304,15 @@ class Board(object):
         for piece in self.get_pieces():
             if piece.position.x == line_pos and piece.position.y == col_pos:
                 return piece.id
+
+    def board_repr(self, player: Player):
+        data = ''
+        for i in range(self.SIZE):
+            for j in range(self.SIZE):
+                if self.board[i][j] is None:
+                    data += f'({i}, {j})="0"'
+                elif self.board[i][j].player == player:
+                    data += f'({i}, {j})="{self.board[i][j].id}"'
+                else:
+                    data += f'({i}, {j})="0"'  # don't care about other player pieces
+        return data.encode()

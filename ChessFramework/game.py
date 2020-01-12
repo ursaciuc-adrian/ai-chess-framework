@@ -38,6 +38,7 @@ class PvAI_Game(Board):
                     try:
                         from_pos = Position(int(from_pos[0]), int(from_pos[1]))
                         to_pos = Position(int(to_pos[0]), int(to_pos[1]))
+                        correct_input = True
                     except:
                         print('An input pair should look like this: "1 0", where x = 1, y = 0.')
                         correct_input = False
@@ -80,6 +81,7 @@ class PvP_Game:
                     try:
                         from_pos = Position(int(from_pos[0]), int(from_pos[1]))
                         to_pos = Position(int(to_pos[0]), int(to_pos[1]))
+                        correct_input = True
                     except:
                         print('An input pair should look like this: "1 0", where x = 1, y = 0.')
                         correct_input = False
