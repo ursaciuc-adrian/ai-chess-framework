@@ -33,8 +33,14 @@ class PvAI_Game(Board):
                 from_pos = input("from: ").split()
                 to_pos = input("to: ").split()
 
-                from_pos = Position(int(from_pos[0]), int(from_pos[1]))
-                to_pos = Position(int(to_pos[0]), int(to_pos[1]))
+                correct_input = False
+                while not correct_input:
+                    try:
+                        from_pos = Position(int(from_pos[0]), int(from_pos[1]))
+                        to_pos = Position(int(to_pos[0]), int(to_pos[1]))
+                    except:
+                        print('An input pair should look like this: "1 0", where x = 1, y = 0.')
+                        correct_input = False
 
                 if self.board.get_player_from_pos(from_pos) != turn:
                     print('This is the other player turn')
@@ -69,8 +75,14 @@ class PvP_Game:
                 from_pos = input("from: ").split()
                 to_pos = input("to: ").split()
 
-                from_pos = Position(int(from_pos[0]), int(from_pos[1]))
-                to_pos = Position(int(to_pos[0]), int(to_pos[1]))
+                correct_input = False
+                while not correct_input:
+                    try:
+                        from_pos = Position(int(from_pos[0]), int(from_pos[1]))
+                        to_pos = Position(int(to_pos[0]), int(to_pos[1]))
+                    except:
+                        print('An input pair should look like this: "1 0", where x = 1, y = 0.')
+                        correct_input = False
 
                 if self.board.get_player_from_pos(from_pos) != turn:
                     print('This is the other player turn')
