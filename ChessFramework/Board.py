@@ -118,22 +118,23 @@ class Board(object):
                 y += move[1]
                 x += p_or * move[0]
                 new_pos = Position(x, y)
-                if new_pos.is_in_boundary(self.SIZE):
+                if new_pos.is_in_boundary(self.SIZE) and \
+                        (self.board[new_pos.x][new_pos.y] is None or attack==True):
                     positions.append(Position(x, y))
 
-                while movement.vacant:
-                    y += move[1]
-                    x += p_or * move[0]
+                    while movement.vacant:
+                        y += move[1]
+                        x += p_or * move[0]
 
-                    new_pos = Position(x, y)
-                    if new_pos.is_in_boundary(self.SIZE) and self.board[new_pos.x][new_pos.y] is None:
-                        positions.append(Position(x, y))
-                    elif new_pos.is_in_boundary(self.SIZE) and attack==True:
-                        positions.append(Position(x,y))
-                        break
-                    else:
-                        break
-
+                        new_pos = Position(x, y)
+                        if new_pos.is_in_boundary(self.SIZE) and self.board[new_pos.x][new_pos.y] is None:
+                            positions.append(Position(x, y))
+                        elif new_pos.is_in_boundary(self.SIZE) and attack==True:
+                            positions.append(Position(x,y))
+                            break
+                        else:
+                            break
+        
         return positions
 
     def can_move(self, from_pos: Position, to_pos: Position):
