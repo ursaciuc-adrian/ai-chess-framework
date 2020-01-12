@@ -11,6 +11,8 @@ class Board(object):
     SIZE = 8
 
     board = []
+    fifty_moves_rule_count = 0
+    moves_count = 0
 
     def init_board(self):
         """Initializes the pieces on the board."""
@@ -134,8 +136,8 @@ class Board(object):
                     new_pos = Position(x, y)
                     if new_pos.is_in_boundary(self.SIZE) and self.board[new_pos.x][new_pos.y] is None:
                         positions.append(Position(x, y))
-                    elif new_pos.is_in_boundary(self.SIZE) and attack==True:
-                        positions.append(Position(x,y))
+                    elif new_pos.is_in_boundary(self.SIZE) and attack == True:
+                        positions.append(Position(x, y))
                         break
                     else:
                         break
@@ -183,16 +185,26 @@ class Board(object):
 
         return False
 
-    def move(self, from_pos: Position, to_pos: Position, verbose = True):
+    def move(self, from_pos: Position, to_pos: Position, verbose=True):
         if self.can_move(from_pos, to_pos) or self.can_attack(from_pos, to_pos):
+            # if a piece is taken out then fifty_moves_rule_count is updated
+            if self.board[to_pos.x][to_pos.y] is not None:
+                self.fifty_moves_rule_count = self.moves_count
+
             self.board[to_pos.x][to_pos.y] = self.board[from_pos.x][from_pos.y]
             self.board[to_pos.x][to_pos.y].position = to_pos
             self.board[from_pos.x][from_pos.y] = None
+
+            # moves_count incremented, needed for the fifty moves rule draw
+            self.moves_count += 1
+            # if a pawn is moved on either side the fifty_moves_rule_count is updated
+            if self.get_piece_id_from_board_position(to_pos.x, to_pos.y) == 'P':
+                self.fifty_moves_rule_count = self.moves_count
         else:
             if verbose:
                 print("Invalid move.")
             return False
-          
+
     def get_player_from_pos(self, from_pos: Position):
         if self.board[from_pos.x][from_pos.y]:
             return self.board[from_pos.x][from_pos.y].player
@@ -206,9 +218,15 @@ class Board(object):
                 return True
         return False
 
-    def is_draw(self):
-        # if fivefold repetition or 75 moves without a pawn push or capture
-        pass
+    def is_draw(self, mode='fifty_moves'):
+        """Checks if it is a drawn"""
+        # fifty moves rule
+        if mode == 'fifty_moves':
+            if self.moves_count + 50 >= self.fifty_moves_rule_count:
+                return True
+        if mode == 'three_fold':
+            pass
+        return False
 
     def is_check(self, player: Player):
         """ Checks if it is check for the player"""
@@ -253,3 +271,8 @@ class Board(object):
             if piece.player == player:
                 pieces.append(piece)
         return pieces
+
+    def get_piece_id_from_board_position(self, line_pos, col_pos):
+        for piece in self.get_pieces():
+            if piece.position.x == line_pos and piece.position.y == col_pos:
+                return piece.id
