@@ -102,6 +102,6 @@ class PvP_Game:
 
 
 if __name__ == '__main__':
-    # game = PvAI_Game(Board(), Strategies.Minimax(3))
-    game = PvP_Game(Board())
+    game = PvAI_Game(Board(), Strategies.MinimaxRandomSample(3, 5, 5))
+    #game = PvP_Game(Board())
     game.play()
