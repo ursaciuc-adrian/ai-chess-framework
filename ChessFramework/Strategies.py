@@ -1,6 +1,7 @@
 from Board import Board
 from Piece import Player
 from Piece import Piece
+import random
 
 ai_player = 0
 human_player = 0
@@ -50,23 +51,6 @@ class Minimax:
                     best_move = (piece.position, move)
         return best_move
 
-    '''def minimax(self, board, depth, is_max):
-        if depth == 0:
-            return evaluate_board(board)
-        pieces = board.get_pieces_for_player(ai_player) if is_max else board.get_pieces_for_player(human_player)
-        call = max if is_max else min
-        best_score = -9999 if is_max else 9999
-        for piece in pieces:
-            all_moves = board.available_piece_moves(piece, True)
-            all_moves += board.available_piece_moves(piece, False)
-            for move in all_moves:
-                board_copy = Board()
-                board_copy.copy(board)
-                if board_copy.move(piece.position, move, False) is False:
-                    continue
-                best_score = call(best_score, self.minimax(board_copy, depth - 1, not is_max))
-        return best_score'''
-
     def minimax_with_alphabeta_pruning(self, board, depth, is_max, alpha, beta):
         if depth == 0:
             return evaluate_board(board)
@@ -109,3 +93,60 @@ class Minimax:
                     if alpha >= beta:
                         break
             return value
+
+class MinimaxRandomSample:
+
+    def __init__(self, max_depth, number_of_pieces, number_of_moves):
+        self.max_depth = max_depth
+        self.number_of_pieces = number_of_pieces
+        self.number_of_moves = number_of_moves
+
+
+    def take_decision(self, board):
+        best_score = -99999
+        best_move = False
+        pieces = board.get_pieces_for_player(ai_player)
+        if len(pieces) > self.number_of_pieces:
+            pieces = random.sample(pieces, self.number_of_pieces)
+        for piece in pieces:
+            all_moves = board.available_piece_moves(piece, True)
+            for move in board.available_piece_moves(piece, False):
+                if move not in all_moves:
+                    all_moves.append(move)
+            if len(all_moves) > self.number_of_pieces:
+                all_moves = random.sample(all_moves, self.number_of_moves)
+            for move in all_moves:
+                board_copy = Board()
+                board_copy.copy(board)
+                if board_copy.move(piece.position, move, False) is False:
+                    continue
+                value = self.minimax(board_copy, self.max_depth - 1, False)
+                if value > best_score:
+                    print("New score: ", str(value))
+                    best_score = value
+                    best_move = (piece.position, move)
+        return best_move
+
+    def minimax(self, board, depth, is_max):
+        if depth == 0:
+            return evaluate_board(board)
+        pieces = board.get_pieces_for_player(ai_player) if is_max else board.get_pieces_for_player(human_player)
+        if len(pieces) > self.number_of_pieces:
+            pieces = random.sample(pieces, self.number_of_pieces)
+        call = max if is_max else min
+        best_score = -9999 if is_max else 9999
+        for piece in pieces:
+            all_moves = board.available_piece_moves(piece, True)
+            for move in board.available_piece_moves(piece, False):
+                if move not in all_moves:
+                    all_moves.append(move)
+            if len(all_moves) > self.number_of_moves:
+                all_moves = random.sample(all_moves, self.number_of_moves)
+
+            for move in all_moves:
+                board_copy = Board()
+                board_copy.copy(board)
+                if board_copy.move(piece.position, move, False) is False:
+                    continue
+                best_score = call(best_score, self.minimax(board_copy, depth - 1, not is_max))
+        return best_score
