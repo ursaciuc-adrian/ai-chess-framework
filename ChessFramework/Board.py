@@ -3,6 +3,7 @@ from Position import Position
 from Guard import Guard
 from Move import *
 from copy import copy, deepcopy
+import zlib
 import re
 
 
@@ -11,6 +12,12 @@ class Board(object):
     SIZE = 8
 
     board = []
+    fifty_moves_rule_count = 0
+    moves_count = 0
+
+    # needed for three-fold draw rule
+    white_player_moves = dict()
+    black_player_moves = dict()
 
     def init_board(self):
         """Initializes the pieces on the board."""
@@ -125,7 +132,7 @@ class Board(object):
                 x += p_or * move[0]
                 new_pos = Position(x, y)
                 if new_pos.is_in_boundary(self.SIZE) and \
-                        (self.board[new_pos.x][new_pos.y] is None or attack==True):
+                        (self.board[new_pos.x][new_pos.y] is None or attack == True):
                     positions.append(Position(x, y))
 
                     while movement.vacant:
@@ -135,12 +142,12 @@ class Board(object):
                         new_pos = Position(x, y)
                         if new_pos.is_in_boundary(self.SIZE) and self.board[new_pos.x][new_pos.y] is None:
                             positions.append(Position(x, y))
-                        elif new_pos.is_in_boundary(self.SIZE) and attack==True:
-                            positions.append(Position(x,y))
+                        elif new_pos.is_in_boundary(self.SIZE) and attack == True:
+                            positions.append(Position(x, y))
                             break
                         else:
                             break
-        
+
         return positions
 
     def can_move(self, from_pos: Position, to_pos: Position):
@@ -184,16 +191,44 @@ class Board(object):
 
         return False
 
-    def move(self, from_pos: Position, to_pos: Position, verbose = True):
+    def move(self, from_pos: Position, to_pos: Position, verbose=True):
         if self.can_move(from_pos, to_pos) or self.can_attack(from_pos, to_pos):
+            if self.board[from_pos.x][from_pos.y].player == Player.WHITE:
+                count = 1
+                try:
+                    count = self.white_player_moves[zlib.crc32(self.board_repr(Player.WHITE))]
+                    self.white_player_moves.update({zlib.crc32(self.board_repr(Player.WHITE)): count})
+                    count += 1
+                except:
+                    self.white_player_moves.update({zlib.crc32(self.board_repr(Player.WHITE)): count})
+
+            if self.board[from_pos.x][from_pos.y].player == Player.BLACK:
+                count = 1
+                try:
+                    count = self.black_player_moves[zlib.crc32(self.board_repr(Player.BLACK))]
+                    self.black_player_moves.update({zlib.crc32(self.board_repr(Player.BLACK)): count})
+                    count += 1
+                except:
+                    self.black_player_moves.update({zlib.crc32(self.board_repr(Player.BLACK)): count})
+
+            # if a piece is taken out then fifty_moves_rule_count is update
+            if self.board[to_pos.x][to_pos.y] is not None:
+                self.fifty_moves_rule_count = self.moves_count
+
             self.board[to_pos.x][to_pos.y] = self.board[from_pos.x][from_pos.y]
             self.board[to_pos.x][to_pos.y].position = to_pos
             self.board[from_pos.x][from_pos.y] = None
+
+            # moves_count incremented, needed for the fifty moves rule draw
+            self.moves_count += 1
+            # if a pawn is moved on either side the fifty_moves_rule_count is updated
+            if self.get_piece_id_from_board_position(to_pos.x, to_pos.y) == 'P':
+                self.fifty_moves_rule_count = self.moves_count
         else:
             if verbose:
                 print("Invalid move.")
             return False
-          
+
     def get_player_from_pos(self, from_pos: Position):
         if self.board[from_pos.x][from_pos.y]:
             return self.board[from_pos.x][from_pos.y].player
@@ -207,9 +242,19 @@ class Board(object):
                 return True
         return False
 
-    def is_draw(self):
-        # if fivefold repetition or 75 moves without a pawn push or capture
-        pass
+    def is_draw(self, mode='fifty_moves'):
+        """Checks if it is a draw"""
+        # fifty moves rule
+        if mode == 'fifty_moves':
+            if self.moves_count + 50 >= self.fifty_moves_rule_count:
+                return True
+        elif mode == 'three_fold':
+            if 3 in self.white_player_moves.values() or 3 in self.black_player_moves.values():
+                return True
+        elif mode == 'all':
+            if self.moves_count + 50 >= self.fifty_moves_rule_count or 3 in self.white_player_moves.values() or 3 in self.black_player_moves.values():
+                return True
+        return False
 
     def is_check(self, player: Player):
         """ Checks if it is check for the player"""
@@ -254,3 +299,20 @@ class Board(object):
             if piece.player == player:
                 pieces.append(piece)
         return pieces
+
+    def get_piece_id_from_board_position(self, line_pos, col_pos):
+        for piece in self.get_pieces():
+            if piece.position.x == line_pos and piece.position.y == col_pos:
+                return piece.id
+
+    def board_repr(self, player: Player):
+        data = ''
+        for i in range(self.SIZE):
+            for j in range(self.SIZE):
+                if self.board[i][j] is None:
+                    data += f'({i}, {j})="0"'
+                elif self.board[i][j].player == player:
+                    data += f'({i}, {j})="{self.board[i][j].id}"'
+                else:
+                    data += f'({i}, {j})="0"'  # don't care about other player pieces
+        return data.encode()
