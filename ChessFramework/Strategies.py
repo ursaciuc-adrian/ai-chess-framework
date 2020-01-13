@@ -33,7 +33,10 @@ class Minimax:
         best_move = False
         for piece in board.get_pieces_for_player(ai_player):
             all_moves = board.available_piece_moves(piece, True)
-            all_moves += board.available_piece_moves(piece, False)
+            for move in board.available_piece_moves(piece, False):
+                if move not in all_moves:
+                    all_moves.append(move)
+
             for move in all_moves:
                 board_copy = Board()
                 board_copy.copy(board)
@@ -72,7 +75,10 @@ class Minimax:
             value = -999999999999999
             for piece in pieces:
                 all_moves = board.available_piece_moves(piece, True)
-                all_moves += board.available_piece_moves(piece, False)
+                for move in board.available_piece_moves(piece, False):
+                    if move not in all_moves:
+                        all_moves.append(move)
+
                 for move in all_moves:
                     board_copy = Board()
                     board_copy.copy(board)
@@ -88,7 +94,10 @@ class Minimax:
             value = 999999999999999
             for piece in pieces:
                 all_moves = board.available_piece_moves(piece, True)
-                all_moves += board.available_piece_moves(piece, False)
+                for move in board.available_piece_moves(piece, False):
+                    if move not in all_moves:
+                        all_moves.append(move)
+
                 for move in all_moves:
                     board_copy = Board()
                     board_copy.copy(board)
