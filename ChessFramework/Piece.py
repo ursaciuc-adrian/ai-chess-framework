@@ -26,8 +26,7 @@ class Piece():
         data = "Position: " + str(self.position) + "\n"
         data += "Name: " + self.name + "\n"
         data += "Id: " + self.id + "\n"
-        data += "Moves: " + str(self.moves) + "\n"
-        data += "Attacks: " + str(self.attacks) + "\n"
+        data += "Moves: " + str(self.movements)
 
         return data
 

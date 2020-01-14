@@ -69,17 +69,21 @@ class PawnMovement(Movement):
 
 
 class CustomMovement(Movement):
-    moves = []
-    attacks = []
-    name = "Custom movement"
-    vacant = False
+    def __init__(self):
+        self.moves = []
+        self.attacks = []
+        self.name = "Custom movement"
+        self.vacant = False
 
-    def add_custom_movement(x, y):
-        moves.append((x, y))
+    def set_name(self, new_name):
+        self.name = new_name
 
-    def add_custom_attack(x, y):
-        attacks.append((x, y))
+    def add_custom_movement(self, x, y):
+        self.moves.append((x, y))
 
-    def set_vacant(value):
+    def add_custom_attack(self, x, y):
+        self.attacks.append((x, y))
+
+    def set_vacant(self, value):
         """Can apply the movement a variable number of times each turn"""
-        vacant = value
+        self.vacant = value
