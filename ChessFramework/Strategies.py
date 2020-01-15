@@ -1,7 +1,7 @@
-from Board import Board
-from Piece import Player
-from Piece import Piece
 import random
+
+from Board import Board
+from Piece import Piece
 
 
 class Minimax_Base:
@@ -29,7 +29,8 @@ class Minimax(Minimax_Base):
     def take_decision(self, board):
         best_score = -99999
         best_move = False
-        values = []
+        possible_scores = set()
+        valid_moves = []
         for piece in board.get_pieces_for_player(self.ai_player):
             all_moves = board.available_piece_moves(piece, True)
             for move in board.available_piece_moves(piece, False):
@@ -43,20 +44,17 @@ class Minimax(Minimax_Base):
                     continue
                 value = self.minimax_with_alphabeta_pruning(board_copy, self.max_depth - 1, False, -9999999999,
                                                             9999999999)
-                if value > best_score:
-                    values.append((value, move, piece.position))
-                    print("New score: ", str(value))
+                if value >= best_score:
+                    if value != best_score:
+                        print("Current best score -", str(value))
+                    possible_scores.add(value)
+                    valid_moves.append((piece.position, move))
                     best_score = value
                     best_move = (piece.position, move)
 
-        # vezi aici vali cum ziceai tu ca modifici daca las asta cu random.choice la final o sa dea cateva invalid moves
-        # daca las aia cu sort si sa iau cea mai mare valoare a lu value da bine doar ca o sa faca stanga-dreapta tura la final
-        # values.sort(key=lambda x: x[0])
-        # value, move, position = values[0]
-        value, move, position = random.choice(values)
-        # print(values)
-        # print(value, move, position)
-        best_move = (position, move)
+        if max(possible_scores) == 0 or len(possible_scores) == 1:
+            print("Aleg random")
+            best_move = random.choice(valid_moves)
 
         return best_move
 

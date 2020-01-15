@@ -117,13 +117,15 @@ class AIvAI_Game:
                 copy = deepcopy(self.board)
                 if turn == Player.BLACK:
                     ai_move = self.strategy1.take_decision(copy)
-                    self.board.move(ai_move[0], ai_move[1])
+                    if self.board.move(ai_move[0], ai_move[1]) is False:
+                        return
                     self.board.display_board()
                     turn = Player.WHITE
                     continue
                 elif turn == Player.WHITE:
                     ai_move = self.strategy2.take_decision(copy)
-                    self.board.move(ai_move[0], ai_move[1])
+                    if self.board.move(ai_move[0], ai_move[1]) is False:
+                        return
                     self.board.display_board()
                     turn = Player.BLACK
                     continue
