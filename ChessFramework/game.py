@@ -2,7 +2,7 @@ from Board import Board
 from Position import Position
 from Piece import Player
 import Strategies
-
+from copy import deepcopy
 
 class PvAI_Game:
     def __init__(self, board: Board, ai_strategy):
@@ -114,14 +114,15 @@ class AIvAI_Game:
 
         while True:
             if not self.board.is_check_mate(turn) and not self.board.is_draw('all'):
+                copy = deepcopy(self.board)
                 if turn == Player.BLACK:
-                    ai_move = self.strategy1.take_decision(self.board)
+                    ai_move = self.strategy1.take_decision(copy)
                     self.board.move(ai_move[0], ai_move[1])
                     self.board.display_board()
                     turn = Player.WHITE
                     continue
                 elif turn == Player.WHITE:
-                    ai_move = self.strategy2.take_decision(self.board)
+                    ai_move = self.strategy2.take_decision(copy)
                     self.board.move(ai_move[0], ai_move[1])
                     self.board.display_board()
                     turn = Player.BLACK

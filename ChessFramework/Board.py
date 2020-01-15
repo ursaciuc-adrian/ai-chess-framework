@@ -11,14 +11,14 @@ class Board(object):
     """Represents the chess table manager. It creates the custom pieces, handles its movements and also the special movements which are multiple pieces movement or based on piece movement history."""
     SIZE = 8
 
-    board = []
-    fifty_moves_rule_count = 0
-    moves_count = 0
-
-    # needed for three-fold draw rule
-    white_player_moves = dict()
-    black_player_moves = dict()
-
+    def __init__(self):
+        self.black_player_moves = dict()
+        self.white_player_moves = dict()
+        self.fifty_moves_rule_count = 0
+        self.moves_count = 0
+        self.board = []
+    
+    
     def init_board(self):
         """Initializes the pieces on the board."""
         self.board = [[None for j in range(self.SIZE)] for i in range(self.SIZE)]
