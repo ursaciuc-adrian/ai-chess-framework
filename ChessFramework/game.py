@@ -17,10 +17,7 @@ class PvAI_Game:
         turn = Player.WHITE
 
         while True:
-
-            # Check check-mate or check and if move doesn't get the king out of check disallow for current player
-            # If check-mate, the other one wins
-            if not self.board.is_check_mate(turn):
+            if not self.board.is_check_mate(turn) and not self.board.is_draw():
                 if turn == Player.BLACK:
                     ai_move = self.strategy.take_decision(self.board)
                     self.board.move(ai_move[0], ai_move[1])
@@ -54,6 +51,9 @@ class PvAI_Game:
                         turn = Player.BLACK
                     else:
                         turn = Player.WHITE
+            if self.board.is_draw():
+                print("It's a draw.")
+                break
 
 
 class PvP_Game:
@@ -67,10 +67,7 @@ class PvP_Game:
         turn = Player.WHITE
 
         while True:
-
-            # Check check-mate or check and if move doesn't get the king out of check disallow for current player
-            # If check-mate, the other one wins
-            if not self.board.is_check_mate(turn):
+            if not self.board.is_check_mate(turn) and not self.board.is_draw():
                 from_pos = input("from: ").split()
                 to_pos = input("to: ").split()
 
@@ -97,6 +94,9 @@ class PvP_Game:
                         turn = Player.BLACK
                     else:
                         turn = Player.WHITE
+            if self.board.is_draw():
+                print("It's a draw.")
+                break
 
 
 class AIvAI_Game:
@@ -113,7 +113,7 @@ class AIvAI_Game:
         turn = Player.WHITE
 
         while True:
-            if not self.board.is_check_mate(turn):
+            if not self.board.is_check_mate(turn) and not self.board.is_draw('all'):
                 if turn == Player.BLACK:
                     ai_move = self.strategy1.take_decision(self.board)
                     self.board.move(ai_move[0], ai_move[1])
@@ -126,6 +126,9 @@ class AIvAI_Game:
                     self.board.display_board()
                     turn = Player.BLACK
                     continue
+            if self.board.is_draw('all'):
+                print("It's a draw.")
+                break
 
 
 if __name__ == '__main__':
