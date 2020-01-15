@@ -21,6 +21,18 @@ class Piece():
         self.movements = []
         self.name = name
         self.id = id
+        if self.id == 'P':
+            self.value = 10
+        elif self.id == 'H':
+            self.value = 20
+        elif self.id == 'B':
+            self.value = 30
+        elif self.id == 'R':
+            self.value = 40
+        elif self.id == 'Q':
+            self.value = 50
+        elif self.id == 'K':
+            self.value = 100
 
     def __str__(self):
         data = "Position: " + str(self.position) + "\n"

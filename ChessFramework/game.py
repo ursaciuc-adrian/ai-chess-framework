@@ -137,6 +137,6 @@ if __name__ == '__main__':
     # game = PvAI_Game(Board(), Strategies.MinimaxRandomSample(3, 5, 5))
     # game = PvP_Game(Board())
     # game = AIvAI_Game(Board(), Strategies.MinimaxRandomSample(Player.BLACK, Player.WHITE, 3, 5, 5), Strategies.MinimaxRandomSample(Player.WHITE, Player.BLACK, 3, 5, 5))
-    game = AIvAI_Game(Board(), Strategies.Minimax(2, Player.BLACK, Player.WHITE),
-                      Strategies.Minimax(2, Player.WHITE, Player.BLACK))
+    game = AIvAI_Game(Board(), Strategies.Minimax(3, Player.BLACK, Player.WHITE),
+                      Strategies.Minimax(3, Player.WHITE, Player.BLACK))
     game.play()
