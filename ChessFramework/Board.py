@@ -134,9 +134,9 @@ class Board(object):
                 if new_pos.is_in_boundary(self.SIZE) and \
                         (self.board[new_pos.x][new_pos.y] is None or attack == True):
                     positions.append(Position(x, y))
-                    
+
                     if attack == True and self.board[new_pos.x][new_pos.y]:
-                        break;
+                        break
                     else:
                         while movement.vacant:
                             y += move[1]
@@ -145,12 +145,12 @@ class Board(object):
                             new_pos = Position(x, y)
                             if new_pos.is_in_boundary(self.SIZE) and self.board[new_pos.x][new_pos.y] is None:
                                 positions.append(Position(x, y))
-                            elif new_pos.is_in_boundary(self.SIZE) and attack==True:
-                                positions.append(Position(x,y))
+                            elif new_pos.is_in_boundary(self.SIZE) and attack == True:
+                                positions.append(Position(x, y))
                                 break
                             else:
                                 break
-                    
+
         return positions
 
     def can_move(self, from_pos: Position, to_pos: Position):
@@ -197,22 +197,20 @@ class Board(object):
     def move(self, from_pos: Position, to_pos: Position, verbose=True):
         if self.can_move(from_pos, to_pos) or self.can_attack(from_pos, to_pos):
             if self.board[from_pos.x][from_pos.y].player == Player.WHITE:
-                count = 1
                 try:
                     count = self.white_player_moves[zlib.crc32(self.board_repr(Player.WHITE))]
-                    self.white_player_moves.update({zlib.crc32(self.board_repr(Player.WHITE)): count})
                     count += 1
-                except:
                     self.white_player_moves.update({zlib.crc32(self.board_repr(Player.WHITE)): count})
+                except:
+                    self.white_player_moves.update({zlib.crc32(self.board_repr(Player.WHITE)): 1})
 
             if self.board[from_pos.x][from_pos.y].player == Player.BLACK:
-                count = 1
                 try:
                     count = self.black_player_moves[zlib.crc32(self.board_repr(Player.BLACK))]
-                    self.black_player_moves.update({zlib.crc32(self.board_repr(Player.BLACK)): count})
                     count += 1
-                except:
                     self.black_player_moves.update({zlib.crc32(self.board_repr(Player.BLACK)): count})
+                except:
+                    self.black_player_moves.update({zlib.crc32(self.board_repr(Player.BLACK)): 1})
 
             # if a piece is taken out then fifty_moves_rule_count is update
             if self.board[to_pos.x][to_pos.y] is not None:
@@ -223,7 +221,7 @@ class Board(object):
             self.board[from_pos.x][from_pos.y] = None
 
             # moves_count incremented, needed for the fifty moves rule draw
-            self.moves_count += 1
+            self.moves_count = self.moves_count + 1
             # if a pawn is moved on either side the fifty_moves_rule_count is updated
             if self.get_piece_id_from_board_position(to_pos.x, to_pos.y) == 'P':
                 self.fifty_moves_rule_count = self.moves_count
@@ -249,13 +247,13 @@ class Board(object):
         """Checks if it is a draw"""
         # fifty moves rule
         if mode == 'fifty_moves':
-            if self.moves_count + 50 >= self.fifty_moves_rule_count:
+            if self.moves_count >= self.fifty_moves_rule_count + 50:
                 return True
         elif mode == 'three_fold':
             if 3 in self.white_player_moves.values() or 3 in self.black_player_moves.values():
                 return True
         elif mode == 'all':
-            if self.moves_count + 50 >= self.fifty_moves_rule_count or 3 in self.white_player_moves.values() or 3 in self.black_player_moves.values():
+            if self.moves_count >= self.fifty_moves_rule_count + 50 or 3 in self.white_player_moves.values() or 3 in self.black_player_moves.values():
                 return True
         return False
 
