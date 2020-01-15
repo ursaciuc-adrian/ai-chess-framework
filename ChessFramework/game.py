@@ -4,7 +4,7 @@ from Piece import Player
 import Strategies
 
 
-class PvAI_Game(Board):
+class PvAI_Game:
     def __init__(self, board: Board, ai_strategy):
         self.board = board
         self.board.init_board()
@@ -15,8 +15,6 @@ class PvAI_Game(Board):
         self.board.display_board()
 
         turn = Player.WHITE
-
-        Strategies.set_AI(Player.BLACK, Player.WHITE)
 
         while True:
 
@@ -101,7 +99,40 @@ class PvP_Game:
                         turn = Player.WHITE
 
 
+class AIvAI_Game:
+    def __init__(self, board: Board, ai_strategy1, ai_strategy2):
+        self.board = board
+        self.board.init_board()
+
+        self.strategy1 = ai_strategy1
+        self.strategy2 = ai_strategy2
+
+    def play(self):
+        self.board.display_board()
+
+        turn = Player.WHITE
+
+        while True:
+            if not self.board.is_check_mate(turn):
+                if turn == Player.BLACK:
+                    ai_move = self.strategy1.take_decision(self.board)
+                    self.board.move(ai_move[0], ai_move[1])
+                    self.board.display_board()
+                    turn = Player.WHITE
+                    continue
+                elif turn == Player.WHITE:
+                    ai_move = self.strategy2.take_decision(self.board)
+                    self.board.move(ai_move[0], ai_move[1])
+                    self.board.display_board()
+                    turn = Player.BLACK
+                    continue
+
+
 if __name__ == '__main__':
-    game = PvAI_Game(Board(), Strategies.MinimaxRandomSample(3, 5, 5))
-    #game = PvP_Game(Board())
+    # game = PvAI_Game(Board(), Strategies.Minimax(2, Player.BLACK, Player.WHITE))
+    # game = PvAI_Game(Board(), Strategies.MinimaxRandomSample(3, 5, 5))
+    # game = PvP_Game(Board())
+    # game = AIvAI_Game(Board(), Strategies.MinimaxRandomSample(Player.BLACK, Player.WHITE, 3, 5, 5), Strategies.MinimaxRandomSample(Player.WHITE, Player.BLACK, 3, 5, 5))
+    game = AIvAI_Game(Board(), Strategies.Minimax(2, Player.BLACK, Player.WHITE),
+                      Strategies.Minimax(2, Player.WHITE, Player.BLACK))
     game.play()

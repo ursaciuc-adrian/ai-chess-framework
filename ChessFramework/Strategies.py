@@ -3,36 +3,33 @@ from Piece import Player
 from Piece import Piece
 import random
 
-ai_player = 0
-human_player = 0
+
+class Minimax_Base:
+
+    def __init__(self, AI, human):
+        self.ai_player = AI
+        self.human_player = human
+
+    def get_piece_value(self, piece: Piece):
+        piece_values = {"Rook": 50, "Horse": 30, "Bishop": 30, "King": 900, "Queen": 800, "Pawn": 10}
+        if piece.name not in piece_values:
+            return 0
+        return piece_values[piece.name]
+
+    def evaluate_board(self, board: Board):
+        return sum(self.get_piece_value(x) for x in board.get_pieces_for_player(self.ai_player)) - sum(
+            self.get_piece_value(x) for x in board.get_pieces_for_player(self.human_player))
 
 
-def set_AI(AI, human):
-    global ai_player, human_player
-    ai_player = AI
-    human_player = human
-
-
-def get_piece_value(piece: Piece):
-    piece_values = {"Rook": 50, "Horse": 30, "Bishop": 30, "King": 900, "Queen": 800, "Pawn": 10}
-    if piece.name not in piece_values:
-        return 0
-    return piece_values[piece.name]
-
-
-def evaluate_board(board: Board):
-    return sum(get_piece_value(x) for x in board.get_pieces_for_player(ai_player)) - sum(
-        get_piece_value(x) for x in board.get_pieces_for_player(human_player))
-
-
-class Minimax:
-    def __init__(self, max_depth):
+class Minimax(Minimax_Base):
+    def __init__(self, max_depth, AI, human):
+        super().__init__(AI, human)
         self.max_depth = max_depth
 
     def take_decision(self, board):
         best_score = -99999
         best_move = False
-        for piece in board.get_pieces_for_player(ai_player):
+        for piece in board.get_pieces_for_player(self.ai_player):
             all_moves = board.available_piece_moves(piece, True)
             for move in board.available_piece_moves(piece, False):
                 if move not in all_moves:
@@ -53,8 +50,9 @@ class Minimax:
 
     def minimax_with_alphabeta_pruning(self, board, depth, is_max, alpha, beta):
         if depth == 0:
-            return evaluate_board(board)
-        pieces = board.get_pieces_for_player(ai_player) if is_max else board.get_pieces_for_player(human_player)
+            return self.evaluate_board(board)
+        pieces = board.get_pieces_for_player(self.ai_player) if is_max else board.get_pieces_for_player(
+            self.human_player)
         if is_max:
             value = -999999999999999
             for piece in pieces:
@@ -94,18 +92,19 @@ class Minimax:
                         break
             return value
 
-class MinimaxRandomSample:
 
-    def __init__(self, max_depth, number_of_pieces, number_of_moves):
+class MinimaxRandomSample(Minimax_Base):
+
+    def __init__(self, AI, human, max_depth, number_of_pieces, number_of_moves):
+        super().__init__(AI, human)
         self.max_depth = max_depth
         self.number_of_pieces = number_of_pieces
         self.number_of_moves = number_of_moves
 
-
     def take_decision(self, board):
         best_score = -99999
         best_move = False
-        pieces = board.get_pieces_for_player(ai_player)
+        pieces = board.get_pieces_for_player(self.ai_player)
         if len(pieces) > self.number_of_pieces:
             pieces = random.sample(pieces, self.number_of_pieces)
         for piece in pieces:
@@ -129,8 +128,9 @@ class MinimaxRandomSample:
 
     def minimax(self, board, depth, is_max):
         if depth == 0:
-            return evaluate_board(board)
-        pieces = board.get_pieces_for_player(ai_player) if is_max else board.get_pieces_for_player(human_player)
+            return self.evaluate_board(board)
+        pieces = board.get_pieces_for_player(self.ai_player) if is_max else board.get_pieces_for_player(
+            self.human_player)
         if len(pieces) > self.number_of_pieces:
             pieces = random.sample(pieces, self.number_of_pieces)
         call = max if is_max else min
