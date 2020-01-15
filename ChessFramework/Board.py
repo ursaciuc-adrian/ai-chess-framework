@@ -226,34 +226,35 @@ class Board(object):
                 if attacked_piece.player == Player.BLACK and attacked_piece.id != 'P':
                     self.black_player_dead_pieces.append(attacked_piece)
 
-            elif self.board[to_pos.x][to_pos.y] is None and self.board[from_pos.x][from_pos.y].id == 'P':
+            self.board[to_pos.x][to_pos.y] = self.board[from_pos.x][from_pos.y]
+            self.board[to_pos.x][to_pos.y].position = to_pos
+            self.board[from_pos.x][from_pos.y] = None
+            if self.board[to_pos.x][to_pos.y].id == 'P':
                 # a white pawn got to the last lane of the black player
-                if self.board[from_pos.x][from_pos.y].player == Player.WHITE and to_pos.x == 7:
+                if self.board[to_pos.x][to_pos.y].player == Player.WHITE and to_pos.x == 7:
                     # select a piece from the dead white pieces and put it on the board
                     try:
                         self.white_player_dead_pieces.sort(key=lambda x: x.value, reverse=True)
                         chosen_piece = self.white_player_dead_pieces[0]
                         self.board[to_pos.x][to_pos.y] = chosen_piece
+                        self.board[to_pos.x][to_pos.y].position = to_pos
                         print(f'The White Player revived a {chosen_piece.name}.')
                     except:
                         print(
                             "The White Player doesn't have any dead pieces. You don't get to revive one with this Pawn.")
 
                 # a black pawn got to the last lane of the white player
-                if self.board[from_pos.x][from_pos.y].player == Player.BLACK and to_pos.x == 0:
+                if self.board[to_pos.x][to_pos.y].player == Player.BLACK and to_pos.x == 0:
                     # select a piece from the dead black pieces and put it on the board
                     try:
                         self.black_player_dead_pieces.sort(key=lambda x: x.value, reverse=True)
                         chosen_piece = self.black_player_dead_pieces[0]
                         self.board[to_pos.x][to_pos.y] = chosen_piece
+                        self.board[to_pos.x][to_pos.y].position = to_pos
                         print(f'The Black Player revived a {chosen_piece.name}.')
                     except:
                         print(
                             "The Black Player doesn't have any dead pieces. You don't get to revive one with this Pawn.")
-
-            self.board[to_pos.x][to_pos.y] = self.board[from_pos.x][from_pos.y]
-            self.board[to_pos.x][to_pos.y].position = to_pos
-            self.board[from_pos.x][from_pos.y] = None
 
             # moves_count incremented, needed for the fifty moves rule draw
             self.moves_count = self.moves_count + 1
