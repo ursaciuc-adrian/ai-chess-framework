@@ -76,11 +76,15 @@ class Minimax(Minimax_Base):
                     board_copy.copy(board)
                     if board_copy.move(piece.position, move, False) is False:
                         continue
-                    value = max(value,
-                                self.minimax_with_alphabeta_pruning(board_copy, depth - 1, not is_max, alpha, beta))
+                    ans = self.minimax_with_alphabeta_pruning(board_copy, depth - 1, not is_max, alpha, beta)
+                    if ans is False:
+                        continue
+                    value = max(value, ans)
                     alpha = max(alpha, value)
                     if alpha >= beta:
                         break
+            if value == -999999999999999:
+                return False
             return value
         else:
             value = 999999999999999
@@ -95,11 +99,15 @@ class Minimax(Minimax_Base):
                     board_copy.copy(board)
                     if board_copy.move(piece.position, move, False) is False:
                         continue
-                    value = min(value,
-                                self.minimax_with_alphabeta_pruning(board_copy, depth - 1, not is_max, alpha, beta))
+                    ans = self.minimax_with_alphabeta_pruning(board_copy, depth - 1, not is_max, alpha, beta)
+                    if ans is False:
+                        continue
+                    value = min(value, ans)
                     beta = min(beta, value)
                     if alpha >= beta:
                         break
+            if value == 999999999999999:
+                return False
             return value
 
 
