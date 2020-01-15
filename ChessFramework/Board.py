@@ -134,7 +134,8 @@ class Board(object):
                 new_pos = Position(x, y)
                 if new_pos.is_in_boundary(self.SIZE) and \
                         (self.board[new_pos.x][new_pos.y] is None or (
-                                attack == True and piece.player.name != self.board[new_pos.x][new_pos.y].player.name)):
+                                attack == True and piece.player.name != self.board[new_pos.x][new_pos.y].player.name and \
+                                        self.board[new_pos.x][new_pos.y].id != "K")):
                     positions.append(Position(x, y))
 
                     if attack == True and self.board[new_pos.x][new_pos.y]:
@@ -147,7 +148,7 @@ class Board(object):
                             new_pos = Position(x, y)
                             if new_pos.is_in_boundary(self.SIZE) and self.board[new_pos.x][new_pos.y] is None:
                                 positions.append(Position(x, y))
-                            elif new_pos.is_in_boundary(self.SIZE) and attack == True:
+                            elif new_pos.is_in_boundary(self.SIZE) and attack == True and self.board[new_pos.x][new_pos.y].id != "K":
                                 positions.append(Position(x, y))
                                 break
                             else:
