@@ -14,11 +14,12 @@ class Board(object):
     def __init__(self):
         self.black_player_moves = dict()
         self.white_player_moves = dict()
+        self.black_player_dead_pieces = []
+        self.white_player_dead_pieces = []
         self.fifty_moves_rule_count = 0
         self.moves_count = 0
         self.board = []
-    
-    
+
     def init_board(self):
         """Initializes the pieces on the board."""
         self.board = [[None for j in range(self.SIZE)] for i in range(self.SIZE)]
@@ -212,9 +213,42 @@ class Board(object):
                 except:
                     self.black_player_moves.update({zlib.crc32(self.board_repr(Player.BLACK)): 1})
 
-            # if a piece is taken out then fifty_moves_rule_count is update
+            # Add the piece attacked in dead pieces list for the player
             if self.board[to_pos.x][to_pos.y] is not None:
+                # if a piece is taken out then fifty_moves_rule_count is update
                 self.fifty_moves_rule_count = self.moves_count
+
+                attacked_piece = self.board[to_pos.x][to_pos.y]
+                if attacked_piece.player == Player.WHITE and attacked_piece.id != 'P':
+                    self.white_player_dead_pieces.append(attacked_piece)
+
+                if attacked_piece.player == Player.BLACK and attacked_piece.id != 'P':
+                    self.black_player_dead_pieces.append(attacked_piece)
+
+            elif self.board[to_pos.x][to_pos.y] is None and self.board[from_pos.x][from_pos.y].id == 'P':
+                # a white pawn got to the last lane of the black player
+                if self.board[from_pos.x][from_pos.y].player == Player.WHITE and to_pos.x == 7:
+                    # select a piece from the dead white pieces and put it on the board
+                    try:
+                        self.white_player_dead_pieces.sort(key=lambda x: x.value, reverse=True)
+                        chosen_piece = self.white_player_dead_pieces[0]
+                        self.board[to_pos.x][to_pos.y] = chosen_piece
+                        print(f'The White Player revived a {chosen_piece.name}.')
+                    except:
+                        print(
+                            "The White Player doesn't have any dead pieces. You don't get to revive one with this Pawn.")
+
+                # a black pawn got to the last lane of the white player
+                if self.board[from_pos.x][from_pos.y].player == Player.BLACK and to_pos.x == 0:
+                    # select a piece from the dead black pieces and put it on the board
+                    try:
+                        self.black_player_dead_pieces.sort(key=lambda x: x.value, reverse=True)
+                        chosen_piece = self.black_player_dead_pieces[0]
+                        self.board[to_pos.x][to_pos.y] = chosen_piece
+                        print(f'The Black Player revived a {chosen_piece.name}.')
+                    except:
+                        print(
+                            "The Black Player doesn't have any dead pieces. You don't get to revive one with this Pawn.")
 
             self.board[to_pos.x][to_pos.y] = self.board[from_pos.x][from_pos.y]
             self.board[to_pos.x][to_pos.y].position = to_pos
