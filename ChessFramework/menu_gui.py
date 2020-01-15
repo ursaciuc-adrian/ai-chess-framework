@@ -1,8 +1,11 @@
 import tkinter as tk
-from game import *
+
+import Strategies
 from Move import *
-from Piece import Piece
+from Piece import Piece, Player
 from Position import Position
+from Board import Board
+from game import PvAI_Game
 
 
 class GUI:
@@ -18,7 +21,14 @@ class GUI:
         self.exit_button_function()
         print('classic button')
 
-        # start classic game
+        root = tk.Tk()
+        root.title("Simple Python Chess")
+
+        game = PvAI_Game(Board(), Strategies.Minimax(2, Player.BLACK, Player.WHITE), root)
+        game.pack(side="top", fill="both", expand="true", padx=4, pady=4)
+        game.draw_pieces()
+
+        root.mainloop()
 
     def custom_button_function(self):
         self.exit_button_function()
@@ -212,8 +222,6 @@ class GUI:
             piece_to_add.set_position(Position(column.get(), row.get()))
             pieces_for_game.append(piece_to_add)
 
-            print(piece_to_add)
-
         piece_selection_label = tk.Label(custom_window, text='Piece selection', font=("Courier", 20))
         piece_selection_label.place(x=20, y=15)
 
@@ -279,7 +287,32 @@ class GUI:
 
         custom_window.mainloop()
 
-        # start custom game
+        custom_board = Board()
+        custom_board.board = [[None for j in range(custom_board.SIZE)] for i in range(custom_board.SIZE)]
+
+        for el in pieces_for_game:
+            # x coloana, y randul
+            el_pos_x_w = el.position.x - 1
+            el_pos_y_w = el.position.y - 1
+
+            el_pos_x_b = 7 - el_pos_x_w
+
+            if el_pos_y_w == 0:
+                el_pos_y_b = 7
+            else:
+                el_pos_y_b = 6
+
+            custom_board.add_piece(el, Position(el_pos_y_w, el_pos_x_w), Player.WHITE)
+            custom_board.add_piece(el, Position(el_pos_y_b, el_pos_x_b), Player.BLACK)
+
+        root = tk.Tk()
+        root.title("Simple Python Chess")
+
+        game = PvAI_Game(custom_board, Strategies.Minimax(2, Player.BLACK, Player.WHITE), root, custom_flag=True)
+        game.pack(side="top", fill="both", expand="true", padx=4, pady=4)
+        game.draw_pieces()
+
+        root.mainloop()
 
     def exit_button_function(self):
         self.main_window.destroy()
