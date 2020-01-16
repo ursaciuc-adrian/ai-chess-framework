@@ -38,7 +38,10 @@ class Piece():
         data = "Position: " + str(self.position) + "\n"
         data += "Name: " + self.name + "\n"
         data += "Id: " + self.id + "\n"
-        data += "Moves: " + str(self.movements)
+        data += "Moves: "
+
+        for m in self.movements:
+            data += m.__class__.__name__ + ", "
 
         return data
 
