@@ -98,6 +98,10 @@ class PvAI_Game(tk.Frame):
                     if self.board.is_check_mate(self.turn) and not self.board.is_draw():
                         print('sah mat am pierdut/egal')
                         self.parent.destroy()
+                    elif self.board.is_draw('all'):
+                        print("It's a draw.")
+                        time.sleep(5)
+                        exit(0)
                 else:
                     self.selected = None
                     self.selected_piece = None
