@@ -308,7 +308,8 @@ class GUI:
         root = tk.Tk()
         root.title("Simple Python Chess")
 
-        game = PvAI_Game(custom_board, Strategies.Minimax(2, Player.BLACK, Player.WHITE), root, custom_flag=True)
+        game = PvAI_Game(custom_board, Strategies.MinimaxRandomSample(Player.BLACK, Player.WHITE, 4, 15, 15), root,
+                         custom_flag=True)
         game.pack(side="top", fill="both", expand="true", padx=4, pady=4)
         game.draw_pieces()
 
