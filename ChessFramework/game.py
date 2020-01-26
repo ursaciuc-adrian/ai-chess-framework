@@ -7,6 +7,7 @@ from Board import Board
 import tkinter as tk
 from PIL import ImageTk
 from Position import Position
+import Strategies
 
 
 class PvAI_Game(tk.Frame):
@@ -220,12 +221,11 @@ class PvP_Game:
 
         while True:
             if not self.board.is_check_mate(turn) and not self.board.is_draw():
-                from_pos = input("from: ").split()
-                to_pos = input("to: ").split()
-
                 correct_input = False
                 while not correct_input:
                     try:
+                        from_pos = input("from: ").split()
+                        to_pos = input("to: ").split()
                         from_pos = Position(int(from_pos[0]), int(from_pos[1]))
                         to_pos = Position(int(to_pos[0]), int(to_pos[1]))
                         correct_input = True
@@ -290,9 +290,9 @@ if __name__ == '__main__':
     print('main')
     # game = PvAI_Game(Board(), Strategies.Minimax(2, Player.BLACK, Player.WHITE))
     # game = PvAI_Game(Board(), Strategies.MinimaxRandomSample(3, 5, 5))
-    # game = PvP_Game(Board())
-    # game = AIvAI_Game(Board(), Strategies.MinimaxRandomSample(Player.BLACK, Player.WHITE, 3, 5, 5),
+    game = PvP_Game(Board())
+    # game = AIvAI_Game(Board(), Strategies.MinimaxRandomSample(Player.BLACK, Player.WHITE, 3, 5, 5))
     # Strategies.MinimaxRandomSample(Player.WHITE, Player.BLACK, 3, 5, 5))
     # game = AIvAI_Game(Board(), Strategies.Minimax(3, Player.BLACK, Player.WHITE),
     #                   Strategies.Minimax(3, Player.WHITE, Player.BLACK))
-    # game.play()
+    game.play()
