@@ -26,6 +26,14 @@ class GUI:
     main_window.geometry('%dx%d+%d+%d' % (400, 300, ws - 200, hs - 150))
     main_window.resizable(0, 0)
 
+    def popup(self, text):
+        win = tk.Toplevel()
+        win.wm_title("Error!")
+        l = ttk.Label(win, text=text)
+        l.grid(row=0, column=0)
+        b = ttk.Button(win, text="Ok", command=win.destroy)
+        b.grid(row=1, column=0)
+
     def classic_button_function(self):
         self.exit_button_function()
 
@@ -37,7 +45,7 @@ class GUI:
         root.resizable(0, 0)
 
 
-        game = PvAI_Game(Board(), Strategies.Minimax(2, Player.BLACK, Player.WHITE), root, width=594, height=620)
+        game = PvAI_Game(Board(), Strategies.Minimax(2, Player.BLACK, Player.WHITE), root, width=592, height=618)
         game.pack(side="top", fill="both", expand="true")
         game.draw_pieces()
 
@@ -57,7 +65,7 @@ class GUI:
         hs = custom_window.winfo_screenheight() / 2
         custom_window.geometry('%dx%d+%d+%d' % (470, 750, ws - 235, hs - 375))
         custom_window.resizable(0, 0)
-
+        
         def add_move():
             try:
                 x = int(x_move.get())
@@ -66,7 +74,6 @@ class GUI:
                 return False
 
             moves.append((x, y))
-            print('added move')
 
         def add_attack():
             try:
@@ -76,7 +83,6 @@ class GUI:
                 return False
 
             attacks.append((x, y))
-            print('added attack')
 
         def add_new_movement():
             new_movement = CustomMovement()
@@ -84,18 +90,21 @@ class GUI:
             new_movement.set_name(move_name.get())
             new_movement.set_vacant(vacant_flag.get())
 
+            str_moves = ""
             for move in moves:
+                str_moves += '(' + str(move[0]) + ', ' + str(move[1]) + ') ' 
                 new_movement.add_custom_movement(move[0], move[1])
 
+            str_attacks = ""
             for attack in attacks:
+                str_attacks += '(' + str(attack[0]) + ', ' + str(attack[1]) + ') ' 
                 new_movement.add_custom_attack(attack[0], attack[1])
 
             moves.clear()
             attacks.clear()
             all_movements_list.append(new_movement)
-
-            print('added movement')
-
+            tv.insert("", 0, text=move_name.get(), values=(str_moves, str_attacks))
+        
         move_name = tk.StringVar()
         x_move = tk.StringVar()
         y_move = tk.StringVar()
@@ -191,8 +200,7 @@ class GUI:
                 if val.get():
                     custom_window.destroy()
                     return
-
-            print('at least one')
+            self.popup("Check at least one movement for the piece!")
 
         for piece in pieces:
             custom_window = ThemedTk(theme=THEME)
@@ -262,6 +270,7 @@ class GUI:
 
             piece_to_add.set_position(Position(column.get(), row.get()))
             pieces_for_game.append(piece_to_add)
+            logs.insert(tk.END, "\nAdded " + piece_to_add.name + " at position " + str(Position(column.get(), row.get())) + ".")
 
         piece_selection_label = ttk.Label(frame, text='Piece selection', font=subtitle_font)
         piece_selection_label.grid(row=0, column=0, padx=30, pady=30)
@@ -296,13 +305,13 @@ class GUI:
         sep2 = ttk.Separator(frame, orient="vertical")
         sep2.grid(column=4, row=0, rowspan=12, pady=20, sticky="ns")
         add_button = ttk.Button(frame, text="Add", command=add_piece_to_game, width=20, style="TButton")
-        add_button.grid(row=0, rowspan=11, column=5, sticky="nsew", padx=20, pady=150)
+        add_button.grid(row=0, rowspan=11, column=5, sticky="nsew", padx=20, pady=240)
         play_button = ttk.Button(frame, text="Play", command=custom_window.destroy, width=30, style="TButton")
-        play_button.grid(row=12, column=0, columnspan=7, sticky="nsew", padx=10, pady=20)
+        play_button.grid(row=12, column=0, columnspan=7, sticky="nsew", padx=10, pady=5)
         
-        logs = tk.Text(frame, height=11)
+        logs = tk.Text(frame, height=10)
         logs.grid(row=13, column=0, columnspan=6, rowspan=2, padx=10, pady=10)
-        logs.insert(tk.END, "Just a text Widgetin two lines")
+        logs.insert(tk.END, "Try adding pieces to the board!")
         custom_window.mainloop()
 
         custom_board = Board()
@@ -327,10 +336,10 @@ class GUI:
         root.title(APPNAME)
         ws = root.winfo_screenwidth() / 2
         hs = root.winfo_screenheight() / 2
-        root.geometry('%dx%d+%d+%d' % (594, 620, ws - 297, hs - 310))
+        root.geometry('%dx%d+%d+%d' % (580, 614, ws - 290, hs - 307))
         root.resizable(0, 0)
 
-        game = PvAI_Game(custom_board, Strategies.MinimaxRandomSample(Player.BLACK, Player.WHITE, 4, 15, 15), root, custom_flag=True)
+        game = PvAI_Game(custom_board, Strategies.MinimaxRandomSample(Player.BLACK, Player.WHITE, 4, 15, 15), root, custom_flag=True, width=592, height=618)
         game.pack(side="top", fill="both", expand="true")
         game.draw_pieces()
 
