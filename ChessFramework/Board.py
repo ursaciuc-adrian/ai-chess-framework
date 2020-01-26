@@ -19,6 +19,7 @@ class Board(object):
         self.fifty_moves_rule_count = 0
         self.moves_count = 0
         self.board = []
+        self.king_mask = 0
 
     def init_board(self):
         """Initializes the pieces on the board."""
@@ -87,6 +88,13 @@ class Board(object):
 
     def add_piece(self, piece: Piece, position: Position, player: Player):
         """Adds a piece on the board."""
+
+        if piece.name == "King":
+            if self.king_mask & 1 << player.value:
+                return False
+            else:
+                self.king_mask |= 1 << player.value
+
         Guard.check_position(position, self.SIZE)
 
         piece.set_position(position)
