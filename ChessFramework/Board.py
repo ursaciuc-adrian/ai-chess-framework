@@ -135,7 +135,7 @@ class Board(object):
                 if new_pos.is_in_boundary(self.SIZE) and \
                         (self.board[new_pos.x][new_pos.y] is None or (
                                 attack == True and piece.player.name != self.board[new_pos.x][new_pos.y].player.name and \
-                                        self.board[new_pos.x][new_pos.y].id != "K")):
+                                self.board[new_pos.x][new_pos.y].id != "K")):
                     positions.append(Position(x, y))
 
                     if attack == True and self.board[new_pos.x][new_pos.y]:
@@ -148,7 +148,8 @@ class Board(object):
                             new_pos = Position(x, y)
                             if new_pos.is_in_boundary(self.SIZE) and self.board[new_pos.x][new_pos.y] is None:
                                 positions.append(Position(x, y))
-                            elif new_pos.is_in_boundary(self.SIZE) and attack == True and self.board[new_pos.x][new_pos.y].id != "K":
+                            elif new_pos.is_in_boundary(self.SIZE) and attack == True and self.board[new_pos.x][
+                                new_pos.y].id != "K":
                                 positions.append(Position(x, y))
                                 break
                             else:
@@ -215,47 +216,64 @@ class Board(object):
                 except:
                     self.black_player_moves.update({zlib.crc32(self.board_repr(Player.BLACK)): 1})
 
-            # Add the piece attacked in dead pieces list for the player
             if self.board[to_pos.x][to_pos.y] is not None:
                 # if a piece is taken out then fifty_moves_rule_count is update
                 self.fifty_moves_rule_count = self.moves_count
 
-                attacked_piece = self.board[to_pos.x][to_pos.y]
-                if attacked_piece.player == Player.WHITE and attacked_piece.id != 'P':
-                    self.white_player_dead_pieces.append(attacked_piece)
-
-                if attacked_piece.player == Player.BLACK and attacked_piece.id != 'P':
-                    self.black_player_dead_pieces.append(attacked_piece)
-
             self.board[to_pos.x][to_pos.y] = self.board[from_pos.x][from_pos.y]
             self.board[to_pos.x][to_pos.y].position = to_pos
             self.board[from_pos.x][from_pos.y] = None
+
             if self.board[to_pos.x][to_pos.y].id == 'P':
                 # a white pawn got to the last lane of the black player
-                if self.board[to_pos.x][to_pos.y].player == Player.WHITE and to_pos.x == 7:
-                    # select a piece from the dead white pieces and put it on the board
-                    try:
-                        self.white_player_dead_pieces.sort(key=lambda x: x.value, reverse=True)
-                        chosen_piece = self.white_player_dead_pieces[0]
-                        self.board[to_pos.x][to_pos.y] = chosen_piece
-                        self.board[to_pos.x][to_pos.y].position = to_pos
-                        print(f'The White Player revived a {chosen_piece.name}.')
-                    except:
-                        print(
-                            "The White Player doesn't have any dead pieces. You don't get to revive one with this Pawn.")
+                if self.board[to_pos.x][to_pos.y].player == Player.WHITE and self.board[to_pos.x][
+                    to_pos.y].position.x == 7:
+                    pieces_that_can_be_revived = [Piece('Rook', 'R'), Piece('Horse', 'H'), Piece('Bishop', 'B'),
+                                                  Piece('Queen', 'Q')]
+
+                    for i in pieces_that_can_be_revived:
+                        print(i.get_name_and_id())
+
+                    correct_input = False
+                    while not correct_input:
+                        piece_selected = input("Choose a piece to revive(select the id): ")
+                        for i in pieces_that_can_be_revived:
+                            if piece_selected == i.id:
+                                correct_input = True
+
+                                # configure the new piece
+                                chosen_piece = i
+                                self.set_movement(chosen_piece)
+                                i.set_player(player=Player.WHITE)
+
+                                self.board[to_pos.x][to_pos.y] = chosen_piece
+                                self.board[to_pos.x][to_pos.y].position = to_pos
+                                print(f'The White Player revived a {chosen_piece.name}.')
 
                 # a black pawn got to the last lane of the white player
-                if self.board[to_pos.x][to_pos.y].player == Player.BLACK and to_pos.x == 0:
-                    # select a piece from the dead black pieces and put it on the board
-                    try:
-                        self.black_player_dead_pieces.sort(key=lambda x: x.value, reverse=True)
-                        chosen_piece = self.black_player_dead_pieces[0]
-                        self.board[to_pos.x][to_pos.y] = chosen_piece
-                        self.board[to_pos.x][to_pos.y].position = to_pos
-                        print(f'The Black Player revived a {chosen_piece.name}.')
-                    except:
-                        print(
-                            "The Black Player doesn't have any dead pieces. You don't get to revive one with this Pawn.")
+                if self.board[to_pos.x][to_pos.y].player == Player.BLACK and self.board[to_pos.x][
+                    to_pos.y].position.x == 0:
+                    pieces_that_can_be_revived = [Piece('Rook', 'R'), Piece('Horse', 'H'), Piece('Bishop', 'B'),
+                                                  Piece('Queen', 'Q')]
+
+                    for i in pieces_that_can_be_revived:
+                        print(i.get_name_and_id())
+
+                    correct_input = False
+                    while not correct_input:
+                        piece_selected = input("Choose a piece to revive(select the id): ")
+                        for i in pieces_that_can_be_revived:
+                            if piece_selected == i.id:
+                                correct_input = True
+
+                                # configure the new piece
+                                chosen_piece = i
+                                self.set_movement(chosen_piece)
+                                i.set_player(player=Player.BLACK)
+
+                                self.board[to_pos.x][to_pos.y] = chosen_piece
+                                self.board[to_pos.x][to_pos.y].position = to_pos
+                                print(f'The Black Player revived a {chosen_piece.name}.')
 
             # moves_count incremented, needed for the fifty moves rule draw
             self.moves_count = self.moves_count + 1
@@ -354,3 +372,19 @@ class Board(object):
                 else:
                     data += f'({i}, {j})="0"'  # don't care about other player pieces
         return data.encode()
+
+    def set_movement(self, piece):
+        if piece.id == "H":
+            piece.add_movement(HorseMovement())
+
+        if piece.id == "R":
+            piece.add_movement(HorizontalMovement())
+            piece.add_movement(VerticalMovement())
+
+        if piece.id == "B":
+            piece.add_movement(DiagonalMovement())
+
+        if piece.id == "Q":
+            piece.add_movement(HorizontalMovement())
+            piece.add_movement(VerticalMovement())
+            piece.add_movement(DiagonalMovement())

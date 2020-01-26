@@ -45,6 +45,11 @@ class Piece():
 
         return data
 
+    def get_name_and_id(self):
+        data = "Name: " + self.name + "\n"
+        data += "Id: " + self.id + "\n"
+        return data
+
     def set_position(self, position: Position):
         self.position = position
 
