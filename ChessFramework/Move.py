@@ -24,7 +24,7 @@ class LimitedHorizontalMovement(Movement):
     """Can move only once horizontally (King like)"""
     moves = [(0, -1), (0, 1)]
     attacks = [(0, -1), (0, 1)]
-    name = "Limited horizantal movement"
+    name = "Limited horizontal movement"
     vacant = False
 
 
@@ -48,7 +48,7 @@ class HorizontalMovement(Movement):
     """Can move a vacant number of times horizontally"""
     moves = [(0, -1), (0, 1)]
     attacks = [(0, -1), (0, 1)]
-    name = "Horizantal movement"
+    name = "Horizontal movement"
     vacant = True
 
 

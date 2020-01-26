@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter.font import Font
 
 import Strategies
 from Move import *
@@ -7,10 +8,18 @@ from Position import Position
 from Board import Board
 from game import PvAI_Game
 
+from tkinter import ttk
+from ttkthemes import ThemedTk
+
+THEME = "equilux"
+APPNAME = "Savvy Chess"
+FONTSIZE = 12
 
 class GUI:
-    main_window = tk.Tk()
-    main_window.title('Chess Menu')
+    main_window = ThemedTk(theme=THEME)
+    main_window.set_theme(THEME)
+    main_window.title(APPNAME)
+
     main_window.geometry('400x300')
     ws = main_window.winfo_screenwidth() / 2
     hs = main_window.winfo_screenheight() / 2
@@ -19,13 +28,17 @@ class GUI:
 
     def classic_button_function(self):
         self.exit_button_function()
-        print('classic button')
 
-        root = tk.Tk()
-        root.title("Simple Python Chess")
+        root = ThemedTk(theme=THEME)
+        root.title(APPNAME)
+        ws = root.winfo_screenwidth() / 2
+        hs = root.winfo_screenheight() / 2
+        root.geometry('%dx%d+%d+%d' % (580, 614, ws - 290, hs - 307))
+        root.resizable(0, 0)
 
-        game = PvAI_Game(Board(), Strategies.Minimax(2, Player.BLACK, Player.WHITE), root)
-        game.pack(side="top", fill="both", expand="true", padx=4, pady=4)
+
+        game = PvAI_Game(Board(), Strategies.Minimax(2, Player.BLACK, Player.WHITE), root, width=594, height=620)
+        game.pack(side="top", fill="both", expand="true")
         game.draw_pieces()
 
         root.mainloop()
@@ -37,12 +50,12 @@ class GUI:
         moves = []
         attacks = []
 
-        custom_window = tk.Tk()
-        custom_window.title('Custom movements')
-        custom_window.geometry('800x750')
+        custom_window = ThemedTk(theme=THEME)
+        custom_window.title(APPNAME + ': Define custom movements')
+        custom_window.geometry('470x750')
         ws = custom_window.winfo_screenwidth() / 2
         hs = custom_window.winfo_screenheight() / 2
-        custom_window.geometry('%dx%d+%d+%d' % (800, 750, ws - 400, hs - 375))
+        custom_window.geometry('%dx%d+%d+%d' % (470, 750, ws - 235, hs - 375))
         custom_window.resizable(0, 0)
 
         def add_move():
@@ -90,66 +103,76 @@ class GUI:
         y_attack = tk.StringVar()
         vacant_flag = tk.BooleanVar()
 
-        name_label = tk.Label(custom_window, text="Enter your new move name:", font=("Courier", 20))
-        name_label.place(x=40, y=30)
 
-        move_name_entry = tk.Entry(custom_window, textvariable=move_name, width=30, font=("Courier", 15))
-        move_name_entry.place(x=40, y=80)
+        style = ttk.Style(custom_window)
+        font = Font(size=FONTSIZE)
+        style.configure("TButton", font=font)
+     
+        subtitle_font = Font(size=60, weight='bold')
+        frame = ttk.Frame(custom_window, width=470, height=750)
+        frame.grid(row=0, columnspan=3)
+        frame.pack(fill="both", expand=1)
 
-        move_label = tk.Label(custom_window, text="Add moves:", font=("Courier", 20))
-        move_label.place(x=40, y=120)
+        name_label = ttk.Label(frame, text="Set movement rule name:")
+        name_label.grid(row=0, column=0, padx=10, pady=10, sticky=tk.W)
 
-        move_x_label = tk.Label(custom_window, text="X", font=("Courier", 20))
-        move_x_label.place(x=50, y=200)
+        move_name_entry = ttk.Entry(frame, textvariable=move_name)
+        move_name_entry.grid(row=0, column=1, padx=10, pady=10, sticky=tk.W)
 
-        move_x = tk.Entry(custom_window, textvariable=x_move, width=5, font=("Courier", 15))
-        move_x.place(x=72, y=204)
+        move_x_label = ttk.Label(frame, text="Move on X:")
+        move_x_label.grid(row=3, column=0, padx=10, pady=5, sticky=tk.W)
 
-        move_y_label = tk.Label(custom_window, text="Y:", font=("Courier", 20))
-        move_y_label.place(x=150, y=200)
+        move_x = ttk.Entry(frame, textvariable=x_move, width=5)
+        move_x.grid(row=3, column=1, padx=10, pady=5, sticky=tk.W)
 
-        move_y = tk.Entry(custom_window, textvariable=y_move, width=5, font=("Courier", 15))
-        move_y.place(x=172, y=204)
+        move_y_label = ttk.Label(frame, text="Move on Y:")
+        move_y_label.grid(row=4, column=0, padx=10, pady=5, sticky=tk.W)
 
-        add_move_button = tk.Button(custom_window, text="Add new move", command=add_move, font=("Courier", 15))
-        add_move_button.place(x=300, y=198)
+        move_y = ttk.Entry(frame, textvariable=y_move, width=5)
+        move_y.grid(row=4, column=1, padx=10, pady=5, sticky=tk.W)
+        
+        add_move_button = ttk.Button(frame, text="Add new move", command=add_move)
+        add_move_button.grid(row=5, columnspan=3, padx=10, pady=10)
 
-        attack_label = tk.Label(custom_window, text="Add attacks:", font=("Courier", 20))
-        attack_label.place(x=40, y=280)
+        attack_x_label = ttk.Label(frame, text="Attack on X:")
+        attack_x_label.grid(row=7, column=0, padx=10, pady=5, sticky=tk.W)
 
-        attack_x_label = tk.Label(custom_window, text="X", font=("Courier", 20))
-        attack_x_label.place(x=50, y=360)
+        attack_x = ttk.Entry(frame, textvariable=x_attack, width=5)
+        attack_x.grid(row=7, column=1, padx=10, pady=5, sticky=tk.W)
 
-        attack_x = tk.Entry(custom_window, textvariable=x_attack, width=5, font=("Courier", 15))
-        attack_x.place(x=72, y=364)
+        attack_y_label = ttk.Label(frame, text="Attack on Y:")
+        attack_y_label.grid(row=8, column=0, padx=10, pady=5, sticky=tk.W)
 
-        attack_y_label = tk.Label(custom_window, text="Y:", font=("Courier", 20))
-        attack_y_label.place(x=150, y=360)
+        attack_y = ttk.Entry(frame, textvariable=y_attack, width=5)
+        attack_y.grid(row=8, column=1, padx=10, pady=5, sticky=tk.W)
 
-        attack_y = tk.Entry(custom_window, textvariable=y_attack, width=5, font=("Courier", 15))
-        attack_y.place(x=172, y=364)
+        add_attack_button = ttk.Button(frame, text="Add new attack", command=add_attack)
+        add_attack_button.grid(row=9, columnspan=3, padx=10, pady=10)
 
-        add_attack_button = tk.Button(custom_window, text="Add new attack", command=add_attack, font=("Courier", 15))
-        add_attack_button.place(x=300, y=358)
+        set_vacant_label = ttk.Label(frame, text="Move any number of vacant squares:")
+        set_vacant_label.grid(row=11, column=0, padx=10, pady=10, sticky=tk.W)
 
-        set_vacant_label = tk.Label(custom_window, text="Set vacant(default is False):", font=("Courier", 20))
-        set_vacant_label.place(x=40, y=450)
+        set_vacant_checkbox = ttk.Checkbutton(frame, variable=vacant_flag)
+        set_vacant_checkbox.grid(row=11, column=1, padx=10, pady=10, sticky=tk.W)
 
-        set_vacant_checkbox = tk.Checkbutton(custom_window, variable=vacant_flag, font=("Courier", 20))
-        set_vacant_checkbox.place(x=515, y=448)
+        add_button = ttk.Button(frame, text="Add new movement", command=add_new_movement)
+        add_button.grid(row=12, columnspan=3, padx=10, pady=10)
 
-        add_button = tk.Button(custom_window, text="Add new movement", command=add_new_movement, font=("Courier", 20))
-        add_button.place(x=40, y=520)
-
-        logs = tk.Text(custom_window, height=4, width=90)
-        logs.place(x=40, y=620)
-        logs.insert(tk.END, "Just a text Widget\nin two lines\n")
-
-        add_button = tk.Button(custom_window, text="Next step", command=custom_window.destroy, font=("Courier", 20))
-        add_button.place(x=590, y=695)
-
+        
+        tv = ttk.Treeview(frame)
+        tv['columns'] = ('moves', 'attacks')
+        tv.heading("#0", text='Movement', anchor='w')
+        tv.column("#0", anchor="w")
+        tv.heading('moves', text='Moves')
+        tv.column('moves', anchor='center', width=100)
+        tv.heading('attacks', text='Attacks')
+        tv.column('attacks', anchor="e", width=100)
+        tv.grid(rowspan=8, columnspan=3, padx=20, pady=20, sticky = (tk.N, tk.S, tk.W, tk.E))
+    
+        add_button = ttk.Button(frame, text="Next step", command=custom_window.destroy, style="TButton")
+        add_button.grid(row=22, columnspan=3, padx=10, pady=20)
         custom_window.mainloop()
-
+        
         all_movements_list.append(HorizontalMovement())
         all_movements_list.append(LimitedDiagonalMovement())
         all_movements_list.append(LimitedHorizontalMovement())
@@ -158,6 +181,7 @@ class GUI:
         all_movements_list.append(HorizontalMovement())
         all_movements_list.append(VerticalMovement())
         all_movements_list.append(PawnMovement())
+        all_movements_list.append(HorseMovement())
 
         pieces = ['Pawn', 'Knight', 'Bishop', 'Rook', 'Queen', 'King']
         pieces_movement_flags = []
@@ -171,41 +195,58 @@ class GUI:
             print('at least one')
 
         for piece in pieces:
-            custom_window = tk.Tk()
-            custom_window.title('Custom movements')
+            custom_window = ThemedTk(theme=THEME)
+            custom_window.title(APPNAME + ': Customize piece movements')
             ws = custom_window.winfo_screenwidth() / 2
             hs = custom_window.winfo_screenheight() / 2
-            custom_window.geometry('%dx%d+%d+%d' % (800, 800, ws - 400, hs - 400))
+            custom_window.geometry('%dx%d+%d+%d' % (470, 750, ws - 235, hs - 375))
             custom_window.resizable(0, 0)
 
-            piece_label = tk.Label(custom_window, text=piece, font=("Courier", 50))
-            piece_label.place(x=100, y=15)
-
+            frame = ttk.Frame(custom_window, width=470, height=750)
+            frame.grid(row=0, columnspan=3, sticky="nsew")
+            frame.pack(fill="both", expand=1)
+            piece_label = ttk.Label(frame, text=piece, font=subtitle_font)
+            piece_label.grid(row=0, columnspan=3, padx=30, pady=30)
+            
             count = 0
             result = []
             for movement in all_movements_list:
-                result.append(tk.BooleanVar())
-                tk.Checkbutton(custom_window,
+                if piece=='King' and 'Limited' in movement.name:
+                        result.append(tk.BooleanVar(value=True))
+                elif piece=='Bishop' and movement.name=='Diagonal movement':
+                        result.append(tk.BooleanVar(value=True))
+                elif piece=='Queen' and (movement.name=='Horizontal movement' or movement.name=='Vertical movement' or movement.name=='Diagonal movement'):
+                        result.append(tk.BooleanVar(value=True))
+                elif piece=='Rook' and (movement.name=='Horizontal movement' or movement.name=='Vertical movement'):
+                        result.append(tk.BooleanVar(value=True))
+                elif piece =='Knight' and movement.name=='Horse movement':
+                        result.append(tk.BooleanVar(value=True))
+                elif piece=='Pawn' and movement.name=='Pawn movement':
+                        result.append(tk.BooleanVar(value=True))
+                else:
+                    result.append(tk.BooleanVar(value=False))
+                ttk.Checkbutton(frame,
                                text=movement.name,
-                               padx=20,
-                               variable=result[count],
-                               font=("Courier", 15)).place(x=140, y=100 + count * 40)
-
+                               variable=result[count]).grid(row=count+1, column=0, padx=50, pady=10, sticky=tk.W)
+                
+                
                 count += 1
 
-            add_button = tk.Button(custom_window, text="Next step", command=submit_check, font=("Courier", 20))
-            add_button.place(x=590, y=720)
-
+            add_button = ttk.Button(frame, text="Next step", command=submit_check, style="TButton")
+            add_button.grid(row=22, columnspan=3, padx=30, pady=30, sticky=tk.S)
             custom_window.mainloop()
 
             pieces_movement_flags.append(result)
-
-        custom_window = tk.Tk()
-        custom_window.title('Custom locations')
+        custom_window = ThemedTk(theme=THEME)
+        custom_window.title(APPNAME + ': Custom locations')
         ws = custom_window.winfo_screenwidth() / 2
         hs = custom_window.winfo_screenheight() / 2
-        custom_window.geometry('%dx%d+%d+%d' % (800, 800, ws - 400, hs - 400))
+        custom_window.geometry('%dx%d+%d+%d' % (660, 750, ws - 330, hs - 375))
         custom_window.resizable(0, 0)
+
+        frame = ttk.Frame(custom_window, width=660, height=750)
+        frame.pack(fill="both", expand=1)
+        frame.grid(row=0, column=0, columnspan=6)
 
         pieces_for_game = []
 
@@ -222,69 +263,46 @@ class GUI:
             piece_to_add.set_position(Position(column.get(), row.get()))
             pieces_for_game.append(piece_to_add)
 
-        piece_selection_label = tk.Label(custom_window, text='Piece selection', font=("Courier", 20))
-        piece_selection_label.place(x=20, y=15)
+        piece_selection_label = ttk.Label(frame, text='Piece selection', font=subtitle_font)
+        piece_selection_label.grid(row=0, column=0, padx=30, pady=30)
 
         count = 0
         piece_name = tk.IntVar()
         for piece in pieces:
-            tk.Radiobutton(custom_window,
+            ttk.Radiobutton(frame,
                            text=piece,
-                           padx=20,
                            variable=piece_name,
-                           value=count,
-                           font=("Courier", 15)).place(x=70, y=70 + count * 50)
-
+                           value=count).grid(row=count+1, column=0, padx=30, pady=10, sticky=tk.W)
             count += 1
+        sep = ttk.Separator(frame, orient="vertical")
+        sep.grid(column=1, row=0, rowspan=10, pady=20, sticky="ns")
 
-        piece_location_label = tk.Label(custom_window, text='Piece location', font=("Courier", 20))
-        piece_location_label.place(x=320, y=15)
+        piece_location_label = ttk.Label(frame, text='Piece location', font=subtitle_font)
+        piece_location_label.grid(row=0, column=2, columnspan=2, padx=30, pady=30)
 
-        piece_location_description_label = tk.Label(custom_window, text='Select the row\n(first is the closest)',
-                                                    font=("Courier", 15))
-        piece_location_description_label.place(x=300, y=70)
+        piece_location_description_label = ttk.Label(frame, text='Select the row\n(first is the closest)')
+        piece_location_description_label.grid(row=1, column=2, columnspan=2, padx=10, pady=10)
 
         row = tk.IntVar(value=1)
-        tk.Radiobutton(custom_window, text='First row', padx=20, variable=row, value=1,
-                       font=("Courier", 15)).place(x=340, y=130)
-        tk.Radiobutton(custom_window, text='Second row', padx=20, variable=row, value=2,
-                       font=("Courier", 15)).place(x=340, y=170)
-
-        piece_location_description_label = tk.Label(custom_window, text='Select the column\n(from left to right)',
-                                                    font=("Courier", 15))
-        piece_location_description_label.place(x=312, y=220)
+        ttk.Radiobutton(frame, text='First row', variable=row, value=1).grid(row=2, column=2, columnspan=2, sticky=tk.W, padx=20)
+        ttk.Radiobutton(frame, text='Second row', variable=row, value=2).grid(row=3, column=2, columnspan=2, sticky=tk.W, padx=20)
+        piece_location_description_label = ttk.Label(frame, text='Select the column\n(from left to right)')
+        piece_location_description_label.grid(row=4, column=2, columnspan=2, padx=10, pady=10)
 
         column = tk.IntVar(value=1)
-        for i in range(8):
-            tk.Radiobutton(custom_window, text=str(i + 1), padx=20, variable=column, value=i + 1,
-                           font=("Courier", 15)).place(x=360 + i // 4 * 70, y=290 + i % 4 * 30)
-
-        add_button = tk.Button(custom_window, text="Add", command=add_piece_to_game, font=("Courier", 20))
-        add_button.place(x=655, y=190)
-
-        play_button = tk.Button(custom_window, text="Play", command=custom_window.destroy, font=("Courier", 20))
-        play_button.place(x=655, y=720)
-
-        canvas1 = tk.Canvas(custom_window, width=2, height=430)
-        canvas1.create_line(2, 10, 2, 1600)
-        canvas1.place(x=280, y=5)
-
-        canvas2 = tk.Canvas(custom_window, width=2, height=430)
-        canvas2.create_line(2, 10, 2, 1600)
-        canvas2.place(x=580, y=5)
-
-        canvas3 = tk.Canvas(custom_window, width=800, height=2)
-        canvas3.create_line(2, 2, 1600, 2)
-        canvas3.place(x=10, y=55)
-
-        canvas4 = tk.Canvas(custom_window, width=800, height=2)
-        canvas4.create_line(2, 2, 1600, 2)
-        canvas4.place(x=10, y=440)
-
-        logs = tk.Text(custom_window, height=1, width=90)
-        logs.place(x=40, y=680)
+        for i in range(4):
+            ttk.Radiobutton(frame, text=str(i + 1), variable=column, value=i + 1).grid(row=5+i, column=2, padx=40, pady=10, sticky=tk.W)
+            ttk.Radiobutton(frame, text=str(i + 5), variable=column, value=i+5).grid(row=5+i, column=3, padx=40, pady=10, sticky=tk.E)
+        sep2 = ttk.Separator(frame, orient="vertical")
+        sep2.grid(column=4, row=0, rowspan=12, pady=20, sticky="ns")
+        add_button = ttk.Button(frame, text="Add", command=add_piece_to_game, width=20, style="TButton")
+        add_button.grid(row=0, rowspan=11, column=5, sticky="nsew", padx=20, pady=150)
+        play_button = ttk.Button(frame, text="Play", command=custom_window.destroy, width=30, style="TButton")
+        play_button.grid(row=12, column=0, columnspan=7, sticky="nsew", padx=10, pady=20)
+        
+        logs = tk.Text(frame, height=11)
+        logs.grid(row=13, column=0, columnspan=6, rowspan=2, padx=10, pady=10)
         logs.insert(tk.END, "Just a text Widgetin two lines")
-
         custom_window.mainloop()
 
         custom_board = Board()
@@ -305,12 +323,15 @@ class GUI:
             custom_board.add_piece(el, Position(el_pos_y_w, el_pos_x_w), Player.WHITE)
             custom_board.add_piece(el, Position(el_pos_y_b, el_pos_x_b), Player.BLACK)
 
-        root = tk.Tk()
-        root.title("Simple Python Chess")
+        root = ThemedTk(theme=THEME)
+        root.title(APPNAME)
+        ws = root.winfo_screenwidth() / 2
+        hs = root.winfo_screenheight() / 2
+        root.geometry('%dx%d+%d+%d' % (594, 620, ws - 297, hs - 310))
+        root.resizable(0, 0)
 
-        game = PvAI_Game(custom_board, Strategies.MinimaxRandomSample(Player.BLACK, Player.WHITE, 4, 15, 15), root,
-                         custom_flag=True)
-        game.pack(side="top", fill="both", expand="true", padx=4, pady=4)
+        game = PvAI_Game(custom_board, Strategies.MinimaxRandomSample(Player.BLACK, Player.WHITE, 4, 15, 15), root, custom_flag=True)
+        game.pack(side="top", fill="both", expand="true")
         game.draw_pieces()
 
         root.mainloop()
@@ -319,15 +340,24 @@ class GUI:
         self.main_window.destroy()
 
     def init_GUI(self):
-        classic_button = tk.Button(self.main_window, text='Classic', width=25, command=self.classic_button_function)
-        classic_button.place(height=50, width=200, relx=0.5, rely=0.2, anchor=tk.CENTER)
+        style = ttk.Style(self.main_window)
+        font = Font(size=12)
+        style.configure("TButton", font=font)
+     
+        frame = ttk.Frame(self.main_window, width = 400, height=300)
+        frame.pack(fill="both", expand=1)
 
-        custom_button = tk.Button(self.main_window, text='Custom', width=25, command=self.custom_button_function)
-        custom_button.place(height=50, width=200, relx=0.5, rely=0.5, anchor=tk.CENTER)
+        classic_button = ttk.Button(frame, text='Classic', style="TButton", command=self.classic_button_function)
+        classic_button.pack(expand=3, padx=100, pady=30)
 
-        exit_button = tk.Button(self.main_window, text='Exit', width=25, command=self.exit_button_function)
-        exit_button.place(height=50, width=200, relx=0.5, rely=0.8, anchor=tk.CENTER)
+        custom_button = ttk.Button(frame, text='Custom', style="TButton", command=self.custom_button_function)
+        custom_button.pack(padx=100, pady=30)
 
+        exit_button = ttk.Button(frame, text='Exit', style="TButton", command=self.exit_button_function)
+        exit_button.pack(padx=100, pady=30)
+
+        frame.grid_columnconfigure(0, weight=1)
+        frame.grid_columnconfigure(4, weight=1)
         self.main_window.mainloop()
 
 

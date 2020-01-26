@@ -5,12 +5,12 @@ from copy import deepcopy
 from Piece import Player
 from Board import Board
 import tkinter as tk
-from PIL import ImageTk
+from PIL import Image
 from Position import Position
+from tkinter import ttk
 
-
-class PvAI_Game(tk.Frame):
-    def __init__(self, board: Board, ai_strategy, parent, square_size=64, custom_flag=False):
+class PvAI_Game(ttk.Frame):
+    def __init__(self, board: Board, ai_strategy, parent, width, height, square_size=64, custom_flag=False):
         self.board = board
         if not custom_flag:
             self.board.init_board()
@@ -24,7 +24,7 @@ class PvAI_Game(tk.Frame):
         canvas_width = self.columns * square_size
         canvas_height = self.rows * square_size
 
-        tk.Frame.__init__(self, parent)
+        ttk.Frame.__init__(self, parent, width=width, height=height)
 
         self.canvas = tk.Canvas(self, width=canvas_width, height=canvas_height, background="grey")
         self.canvas.pack(side="top", fill="both", anchor="c", expand=True)
@@ -32,12 +32,11 @@ class PvAI_Game(tk.Frame):
         self.canvas.bind("<Configure>", self.refresh)
         self.canvas.bind("<Button-1>", self.click)
 
-        self.statusbar = tk.Frame(self, height=64)
-
-        self.label_status = tk.Label(self.statusbar, text="   White's turn  ", fg="black")
+        self.statusbar = ttk.Frame(self)
+        self.label_status = ttk.Label(self.statusbar, text="   White's turn  ")
         self.label_status.pack(side=tk.LEFT, expand=0, in_=self.statusbar)
 
-        self.button_quit = tk.Button(self.statusbar, text="Quit", fg="black", command=self.parent.destroy)
+        self.button_quit = ttk.Button(self.statusbar, text="Quit", command=self.parent.destroy)
         self.button_quit.pack(side=tk.RIGHT, in_=self.statusbar)
         self.statusbar.pack(expand=False, fill="x", side='bottom')
 
@@ -47,8 +46,8 @@ class PvAI_Game(tk.Frame):
     highlighted = None
     icons = {}
 
-    color1 = "white"
-    color2 = "grey"
+    color1 = "NavajoWhite2"
+    color2 = "NavajoWhite4"
 
     rows = 8
     columns = 8
@@ -96,10 +95,10 @@ class PvAI_Game(tk.Frame):
 
                     self.refresh()
                     if self.board.is_check_mate(self.turn) and not self.board.is_draw():
-                        print('sah mat am pierdut/egal')
+                        self.label_status["text"] = "Player " + str(self.turn) + " lost."
                         self.parent.destroy()
                     elif self.board.is_draw('all'):
-                        print("It's a draw.")
+                        self.label_status["text"] = "It's a draw."
                         time.sleep(5)
                         exit(0)
                 else:
@@ -113,19 +112,16 @@ class PvAI_Game(tk.Frame):
             self.refresh()
 
     def move(self, p1, p2):
-        print('MOVE')
         aux = p2.x
         p2.x = p2.y
         p2.y = aux
 
         if self.board.can_move(p1.position, p2) or self.board.can_attack(p1.position, p2):
-            print('MUTAT/MANCAT')
             self.board.move(p1.position, p2)
-            self.label_status["text"] = " " + p1.player.name.capitalize() + ": " + str(p1) + str(p2)
+            self.label_status["text"] = p1.player.name.capitalize() + " moved piece " + str(p1.name) + " on " + str(p2) + '.'
             return True
         else:
-            print('NU POT MUTA AICI')
-            self.label_status["text"] = "Can not make the move: " + str(p1) + str(p2)
+            self.label_status["text"] = "Cannot move " + str(p1.name) + " to " + str(p2)+ '.'
             return False
 
     def highlight(self, pos):
@@ -202,7 +198,7 @@ class PvAI_Game(tk.Frame):
                 piecename = "%s%s%s" % (piece.id, x, y)
 
                 if filename not in self.icons:
-                    self.icons[filename] = ImageTk.PhotoImage(file=filename, width=32, height=32)
+                    self.icons[filename] = tk.PhotoImage(file=filename.lower(), width=64, height=64)
 
                 self.add_piece(piecename, self.icons[filename], x, y)
                 self.place_piece(piecename, x, y)
