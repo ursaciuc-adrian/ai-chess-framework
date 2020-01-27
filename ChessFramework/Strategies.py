@@ -17,6 +17,12 @@ class Minimax_Base:
         return piece_values[piece.name]
 
     def evaluate_board(self, board: Board):
+        if board.is_check(self.ai_player):
+            print("[ AI ] I'm in check")
+            return -3000
+        if board.is_check(self.human_player):
+            print("[ AI ] Human is in check")
+            return 3000
         return sum(self.get_piece_value(x) for x in board.get_pieces_for_player(self.ai_player)) - sum(
             self.get_piece_value(x) for x in board.get_pieces_for_player(self.human_player))
 
@@ -52,7 +58,7 @@ class Minimax(Minimax_Base):
                     best_score = value
                     best_move = (piece.position, move)
 
-        if max(possible_scores) == 0 or len(possible_scores) == 1:
+        if (max(possible_scores) == 0 and min(possible_scores) == 0) or len(possible_scores) == 1:
             print("Aleg random")
             best_move = random.choice(valid_moves)
 
