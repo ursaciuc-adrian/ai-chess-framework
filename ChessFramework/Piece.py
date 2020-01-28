@@ -20,6 +20,7 @@ class Piece():
     def __init__(self, name, id):
         self.movements = []
         self.name = name
+        self.position = None
         self.id = id
         if self.id == 'P':
             self.value = 10

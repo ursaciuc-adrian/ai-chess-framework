@@ -194,7 +194,7 @@ class GUI:
         all_movements_list.append(PawnMovement())
         all_movements_list.append(HorseMovement())
 
-        pieces = ['Pawn', 'Knight', 'Bishop', 'Rook', 'Queen', 'King']
+        pieces = ['Pawn', 'Horse', 'Bishop', 'Rook', 'Queen', 'King']
         pieces_movement_flags = []
 
         def submit_check():
@@ -241,7 +241,7 @@ class GUI:
                         result.append(tk.BooleanVar(value=True))
                 elif piece=='Rook' and (movement.name=='Horizontal movement' or movement.name=='Vertical movement'):
                         result.append(tk.BooleanVar(value=True))
-                elif piece =='Knight' and movement.name=='Horse movement':
+                elif piece =='Horse' and movement.name=='Horse movement':
                         result.append(tk.BooleanVar(value=True))
                 elif piece=='Pawn' and movement.name=='Pawn movement':
                         result.append(tk.BooleanVar(value=True))
@@ -283,7 +283,6 @@ class GUI:
         def add_piece_to_game():
             flag_count = 0
             piece_to_add = Piece(pieces[piece_name.get()], pieces[piece_name.get()][0])
-
             for flag in pieces_movement_flags[piece_name.get()]:
                 if flag.get():
                     piece_to_add.add_movement(all_movements_list[flag_count])
