@@ -125,6 +125,44 @@ class Board(object):
                     print("0 ", end="")
             print()
         print()
+    
+    def available_piece_moves_c(self, piece: Piece, attack=False):
+        positions = []
+
+        p_or = 1 if piece.player == Player.WHITE else -1
+        for movement in piece.movements:
+            moves = movement.attacks if attack else movement.moves
+
+            for move in moves:
+                x = piece.position.x
+                y = piece.position.y
+
+                y += move[1]
+                x += p_or * move[0]
+                new_pos = Position(x, y)
+                if new_pos.is_in_boundary(self.SIZE) and \
+                        (self.board[new_pos.x][new_pos.y] is None or (
+                                attack == True and piece.player.name != self.board[new_pos.x][new_pos.y].player.name)):
+                    positions.append(Position(x, y))
+
+                    if attack == True and self.board[new_pos.x][new_pos.y]:
+                        break
+                    else:
+                        while movement.vacant:
+                            y += move[1]
+                            x += p_or * move[0]
+
+                            new_pos = Position(x, y)
+                            if new_pos.is_in_boundary(self.SIZE) and self.board[new_pos.x][new_pos.y] is None:
+                                positions.append(Position(x, y))
+                            elif new_pos.is_in_boundary(self.SIZE) and attack == True:
+                                positions.append(Position(x, y))
+                                break
+                            else:
+                                break
+
+        return positions
+
 
     def available_piece_moves(self, piece: Piece, attack=False):
         positions = []
@@ -199,7 +237,11 @@ class Board(object):
             return False
 
         # should beck special moves also (not per piece only)
-        available_moves = self.available_piece_moves(from_piece, attack=True)
+        if (to_piece.id == 'K')
+            available_moves = self.available_piece_moves_c(from_piece, attack=True)
+        else:
+            available_moves = self.available_piece_moves(from_piece, attack=True)
+        
         if to_pos in available_moves:
             return True
 
