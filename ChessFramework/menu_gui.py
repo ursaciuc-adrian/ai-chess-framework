@@ -363,7 +363,7 @@ class GUI:
         root.geometry('%dx%d+%d+%d' % (580, 614, ws - 290, hs - 307))
         root.resizable(0, 0)
 
-        game = PvAI_Game(custom_board, Strategies.MinimaxRandomSample(Player.BLACK, Player.WHITE, 4, 15, 15), root, custom_flag=True, width=592, height=618)
+        game = PvAI_Game(custom_board, Strategies.MinimaxRandomSample(Player.BLACK, Player.WHITE, 2, 10, 10), root, custom_flag=True, width=592, height=618)
         game.pack(side="top", fill="both", expand="true")
         game.draw_pieces()
 
