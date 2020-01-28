@@ -237,7 +237,7 @@ class Board(object):
             return False
 
         # should beck special moves also (not per piece only)
-        if (to_piece.id == 'K')
+        if to_piece.id == 'K':
             available_moves = self.available_piece_moves_c(from_piece, attack=True)
         else:
             available_moves = self.available_piece_moves(from_piece, attack=True)
