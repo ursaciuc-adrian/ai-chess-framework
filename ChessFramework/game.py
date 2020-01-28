@@ -100,12 +100,9 @@ class PvAI_Game(ttk.Frame):
 
                     self.refresh()
                     if self.board.is_check_mate(self.turn) and not self.board.is_draw():
-                        self.label_status["text"] = "Player " + str(self.turn) + " lost."
-                        self.parent.destroy()
+                        self.label_status["text"] = "Player " + str(self.turn) + " is in check."
                     elif self.board.is_draw('all'):
                         self.label_status["text"] = "It's a draw."
-                        time.sleep(5)
-                        exit(0)
                 else:
                     self.selected = None
                     self.selected_piece = None
