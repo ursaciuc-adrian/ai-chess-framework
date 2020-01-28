@@ -72,7 +72,12 @@ class PvAI_Game(ttk.Frame):
             current_row = 7 - (event.y // row_size)
 
             position = Position(current_column, current_row)
-            print(self.board.board[current_row][current_column])
+            curr_piece = str(self.board.board[current_row][current_column])
+            if curr_piece != "None" and (self.board.get_player_from_pos(Position(current_row, current_column)) == Player.WHITE or not self.selected_piece):
+                self.highlight(position)
+                self.refresh()
+                print(curr_piece)
+                return None
 
             if self.selected_piece:
                 print('AL DOILEA PAS')
@@ -84,7 +89,7 @@ class PvAI_Game(ttk.Frame):
                     self.refresh()
                     self.draw_pieces()
 
-                    time.sleep(random.randint(1, 3))
+                    #time.sleep(random.randint(1, 3))
                     self.turn = Player.BLACK
                     if not self.board.is_check_mate(self.turn) and not self.board.is_draw():
                         ai_move = self.strategy.take_decision(self.board)
@@ -107,9 +112,6 @@ class PvAI_Game(ttk.Frame):
                     self.highlighted = None
                     self.refresh()
 
-            else:
-                self.highlight(position)
-            self.refresh()
 
     def move(self, p1, p2):
         aux = p2.x
